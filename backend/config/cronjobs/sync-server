@@ -1,0 +1,10 @@
+# must be ended with a new line "LF" (Unix) and not "CRLF" (Windows)
+#* 5-21 * * 1-6 /usr/local/bin/php /var/www/html/cloudsync/sync_up.php >> /var/log/cron.log 2>&1
+#*/5 5-21 * * 1-6 /usr/local/bin/php /var/www/html/cloudsync/sync_down.php >> /var/log/cron.log 2>&1
+#0 3 * * 1-6 /usr/local/bin/php /var/www/html/cloudsync/update_student_photos.php >> /var/log/cron.log 2>&1
+* 5-21 * * 1-6 /usr/local/bin/php /var/www/html/cloudsync/sync_up.php > /dev/null 2>&1
+#*/5 5-21 * * 1-6 /usr/local/bin/php /var/www/html/cloudsync/sync_down.php > /dev/null 2>&1
+#0 3 * * 1-6 /usr/local/bin/php /var/www/html/cloudsync/update_student_photos.php > /dev/null 2>&1
+# An empty line is required at the end of this file for a valid cron file.
+
+

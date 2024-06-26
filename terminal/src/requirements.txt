@@ -1,0 +1,7 @@
+requests
+python-dotenv
+tk
+Pillow
+nfcpy
+opencv-python
+keyboard

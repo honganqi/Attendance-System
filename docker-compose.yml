@@ -1,0 +1,73 @@
+services:
+  db:
+    container_name: attendance_db
+    # runs the image everytime the container starts EXCEPT if stopped. run with "docker compose up" after if needed
+    restart: always
+    image: mariadb:10.6
+    # initial settings of the database
+    # change the values to your specifications (especially the timezone/TZ)
+    env_file:
+      - path: ./.env
+        required: true
+    # enable port 3306 on host to access db from database managers like DBeaver and MySQL Workbench
+    ports:
+      - 3306:3306
+    volumes:
+      - ./backend/config/initial_db:/docker-entrypoint-initdb.d
+      - mysql_data:/var/lib/mysql
+    # disable database Strict Mode
+    command: mysqld --sql_mode=""
+    networks:
+      - attendance_network
+  backend:
+    container_name: attendance_backend
+    # runs the image everytime the container starts EXCEPT if stopped. run with "docker compose up" after if needed
+    restart: always
+    depends_on:
+      - db
+    image: attendance-backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    env_file:
+      - path: ./.env
+        required: true
+    volumes:
+      - "./backend/:/var/www/html"
+      - "./backend/config/php.ini:/usr/local/etc/php/php.ini"
+    ports:
+      - 2024:80
+    networks:
+      - attendance_network
+  admin:
+    container_name: attendance_admin
+    # runs the image everytime the container starts EXCEPT if stopped. run with "docker compose up" after if needed
+    restart: always
+    depends_on:
+      - db
+    image: attendance-admin
+    build:
+      context: ./admin
+      dockerfile: Dockerfile
+      args:
+        - BACKEND_URL=${BACKEND_URL}
+    env_file:
+      - path: ./.env
+        required: true
+    # change the values to your specifications (especially the timezone/TZ)
+    # ORIGIN=<access location should be permanent for production build not to throw CORS forbidden errors (e.g. http://raspberrypi.local or static address like below)
+    environment:
+      - NODE_ENV=development
+      - ORIGIN=${FRONTEND_ORIGIN}
+    # Bind to port 3000 since binding to port 80 is not allowed when using rootless Docker:
+    # Error response from daemon: driver failed programming external connectivity on endpoint attendance_admin: Error starting userland proxy: error while calling PortManager.AddPort(): cannot expose privileged port 80, you can add 'net.ipv4.ip_unprivileged_port_start=80' to /etc/sysctl.conf (currently 1024), or set CAP_NET_BIND_SERVICE on rootlesskit binary, or choose a larger port number (>= 1024): listen tcp4 0.0.0.0:80: bind: permission denied
+    # When using 'net.ipv4.ip_unprivileged_port_start=80', it says "not allowed"
+    ports:
+      - 3000:3000
+    networks:
+      - attendance_network
+networks:
+  attendance_network:
+    driver: bridge
+volumes:
+  mysql_data:

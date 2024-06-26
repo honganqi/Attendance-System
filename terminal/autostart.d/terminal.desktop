@@ -1,0 +1,17 @@
+[Desktop Entry]
+Name=Attendance System Terminal
+Type=Application
+Comment=Hope it works
+
+# regular
+## Exec=/usr/bin/python ~/Attendance-System/terminal/src/terminal.py
+
+# with virtual environment
+Exec=bash -c "~/Attendance-System/terminal/src/.venv/bin/python ~/Attendance-System/terminal/src/terminal.py"
+
+# with virtual environment and delay
+## Exec=bash -c "sleep 60 && ~/Attendance-System/terminal/src/.venv/bin/python ~/Attendance-System/terminal/src/terminal.py"
+
+# Delay the startup to allow backend and database to run before the terminal
+## X-GNOME-Autostart-delay=30
+X-GNOME-Autostart-enabled=true

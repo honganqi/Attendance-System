@@ -1,0 +1,50 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@tailwind variants;
+
+html,
+body {
+	@apply h-full overflow-hidden;
+}
+
+:root [data-theme='skeleton'] {
+	--theme-rounded-container: theme(borderRadius.md);
+	--theme-rounded-base: theme(borderRadius.md);
+	--theme-font-family-base: 'Inter', sans-serif;
+    --theme-font-family-heading: 'Inter', sans-serif;
+}
+
+h1, h2, h3, h4 {
+    font-weight: bold;
+}
+
+h1 { font-size: 2.25rem; line-height: 2.5rem; }
+h2 { font-size: 1.5rem; line-height: 2rem;}
+h4 { font-size: 1.25rem; line-height: 1.75rem; }
+
+#content {
+    margin: 1.5rem auto;
+}
+
+#loadingOverlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	--size: 100px;
+	background: rgba(0,0,0,0.6);
+	z-index: 9999;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+html.dark #siteTitleHeader:hover {
+	filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.50));
+}
+
+html:not(.dark) #siteTitleHeader:hover {
+	filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.50));
+}
