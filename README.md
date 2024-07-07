@@ -40,21 +40,27 @@ The current main branch of this project is meant to be used in a trusted network
 9. Install the Attendance System package to your Raspberry Pi. (see below) [Installation: Attendance System Package](./README.md#installation-attendance-system-package)
 
 ## Installation: Attendance System Package
-1. Install using Git
-    1. Install git on the Raspberry Pi: Open the Terminal and do `sudo apt install git`.
-    2. Go to your home directory: `cd ~`.
-    2. Clone the package from GitHub: `git clone https://github.com/honganqi/Attendance-System.git`
-    * You can also clone the package on a "main" computer where you can make your modifications and test your changes then get the files over to the Raspberry Pi with a storage device or FTP to transfer the files over the network. (see below)
-2. Install by downloading the release as a ZIP file
-    1. Go to your home directory: `cd ~`.
-    2. Create a directory named "Attendance-System": `mkdir Attendance-System`
-    3. Go into this directory: `cd Attendance-System`
-    4. Get the latest release. Go to https://github.com/honganqi/Attendance-System/releases and copy the link of the ZIP file named "Attendance-System.something.something.zip" 
-    5. Download the package ZIP file: `wget <put the link you copied here>`
-    6. Unzip the ZIP file: `unzip <filename of the downloaded ZIP file>`
-    7. Delete the ZIP file: `rm <filename of the downloaded ZIP file>`
-    8. You can also install FTP and go from there. See [OPTIONAL: Install VSFTPd](./README.md#optional-install-vsftpd)
-4. Run the installer `sudo install.sh`. See below [Installation: Package Dependencies](./README.md#installation-package-dependencies) for details on what it does. This is a multi-step process which took about 1 hour on my Raspberry Pi 3B.
+1. Get the source files
+    1. Clone the files using Git (Raspberry Pi OS already has this by default)
+        1. Install git on the Raspberry Pi: Open the Terminal and do `sudo apt install git`.
+        2. Go to your home directory: `cd ~`.
+        2. Clone the package from GitHub: `git clone https://github.com/honganqi/Attendance-System.git`
+        * You can also clone the package on a "main" computer where you can make your modifications and test your changes then get the files over to the Raspberry Pi with a storage device or FTP to transfer the files over the network. (see below)
+    2. Downloading the release as a ZIP file
+        1. Go to your home directory: `cd ~`.
+        2. Create a directory named "Attendance-System": `mkdir Attendance-System`
+        3. Go into this directory: `cd Attendance-System`
+        4. Get the latest release. Go to https://github.com/honganqi/Attendance-System/releases and copy the link of the ZIP file named "Attendance-System.something.something.zip" 
+        5. Download the package ZIP file: `wget <put the link you copied here>`
+        6. Unzip the ZIP file: `unzip <filename of the downloaded ZIP file>`
+        7. Delete the ZIP file: `rm <filename of the downloaded ZIP file>`
+        8. You can also install FTP and go from there. See [OPTIONAL: Install VSFTPd](./README.md#optional-install-vsftpd)
+2. Enter the Attendance System directory in your home directory: `cd ~/Attendance-System`
+3. Make the installer executable: `chmod +x ./installer.sh`
+4. Run the installer as root with `sudo -E ./install.sh`.
+    - The `-E` option is needed to pass environment variables to the Docker installer script.
+    - The installer will ask for the **username** of the **non-root user** specified in the Raspberry Pi OS Imager customization options screen.
+    - See below [Installation: Package Dependencies](./README.md#installation-package-dependencies) for details on what it does. This is a multi-step process which took about 1 hour on my Raspberry Pi 3B.
 5. Reboot the Raspberry Pi after installation is complete. You should see the terminal's clock window after rebooting.
 
 ## Installation: Package Dependencies

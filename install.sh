@@ -1,38 +1,48 @@
 #!/bin/bash
 
+# initial variables and constants
 RESET="\e[0m"
-BORDER="\e[32m";
-TEXT_COLOR="\e[1;37m";
+BORDER="\e[32m"
+TEXT_COLOR="\e[1;37m"
+ERROR_COLOR="\e[1;31m"
 PADDING=4
-
 steps=(
-	"Environment Variables"
-	"Update & Upgrade APT"
-	"Python: Create Virtual Environment"
-	"Python: Upgrade pip"
-	"Python: Install Requirements in virtualenv"
-	"Docker: Install Docker Engine"
-	#"Docker: Build Backend Image"
-	#"Docker: Build Admin Frontend Image"
-	"Docker: Docker Compose (run container)"
-	"Install Startup Scripts"
+	"CreateEnvFile"
+	"UpgradeApt"
+	"PythonMakeVenv"
+	"PythonUpgradePip"
+	"PythonInstallReqs"
+	"DockerInstallEngine"
+	"DockerRunContainers"
+	"InstallStartupScripts"
 	)
 
+declare -A STEP_LIST
+STEP_LIST["CreateEnvFile"]="Environment Variables"
+STEP_LIST["UpgradeApt"]="Update & Upgrade APT"
+STEP_LIST["PythonMakeVenv"]="Python: Create Virtual Environment"
+STEP_LIST["PythonUpgradePip"]="Python: Upgrade pip"
+STEP_LIST["PythonInstallReqs"]="Python: Install Requirements in virtualenv"
+STEP_LIST["DockerInstallEngine"]="Docker: Install Docker Engine"
+STEP_LIST["DockerRunContainers"]="Docker: Docker Compose (run container)"
+STEP_LIST["InstallStartupScripts"]="Install Startup Scripts"
+
 longest_string=10
+user=""
 
 # get longest string in array of titles
 for string in "${steps[@]}"
 do
-	current_length=${#string}
+	current_length=${#STEP_LIST[$string]}
 	if [ $current_length -gt $longest_string ]
 	then
-		longest_string=${#string}
+		longest_string=${current_length}
 	fi
 done
 
 box_length=$((longest_string + ((PADDING * 2))))
 
-function PrintBoxLine() {
+PrintBoxLine() {
 	char=$1
 
 	printf "${BORDER}##"
@@ -68,100 +78,91 @@ function PrintBoxLine() {
 	printf "${RESET}${BORDER}##${RESET}\n"
 }
 
-escape_string() {
-	echo "$1" | sed 's/[\/&]/\\&/g'
-}
-
-clean_url() {
-	local input="$1"
-	# Remove "http://" or "https://"
-	input="${input#http://}"
-	input="${input#https://}"
-
-	# Remove the port if present (e.g., ":3000")
-	input="${input%%:*}"
-
-	# Remove trailing slashes
-	input="${input%%/}"
-
-	echo "$input"
-}
-
 # installation functions
-function CreateEnvFile {
+CreateEnvFile() {
 	source ./helpers/configure_env.sh
 }
 
-function UpgradeApt {
+UpgradeApt() {
 	sudo apt update && sudo apt upgrade -y
 }
 
-function PythonMakeVenv {
+PythonMakeVenv() {
 	source ./helpers/1-terminal_create_python_venv.sh
 }
 
-function PythonUpgradePip {
+PythonUpgradePip() {
 	./terminal/src/.venv/bin/python -m pip install --upgrade pip
 }
 
-function PythonInstallReqs {
+PythonInstallReqs() {
 	source ./helpers/2-terminal_install_reqs_in_venv.sh
 }
 
-function DockerInstallEngine {
-	if [ -x "$(command -v docker)" ]; then
-		echo "Skipping: Docker is already installed"
-	else
-		source ./helpers/3-docker_install.sh
-	fi
+DockerInstallEngine() {
+	source ./helpers/3-docker_install.sh
 }
 
-function DockerBuildBackend {
+DockerBuildBackend() {
 	source ./helpers/4-docker_build_backend.sh
 }
 
-function DockerBuildAdmin {
+DockerBuildAdmin() {
 	source ./helpers/6-docker_build_admin_when_final.sh
 }
 
-function DockerRunContainers {
+DockerRunContainers() {
 	source ./helpers/7-docker_compose_prod.sh
 }
 
-function InstallStartupScripts {
+InstallStartupScripts() {
 	source ./helpers/8-install_startup_when_ready.sh
 }
+
+
+
+
+# upon running, ask for username
+printf "\n"
+read -p "Please input the username of system's user: " user
+if ! id "$user" >/dev/null 2>&1; then
+	printf "${ERROR_COLOR}ERROR: ${TEXT_COLOR}User ${BORDER}$user ${TEXT_COLOR}not found\n"
+	exit 1
+fi
+
+
+
 
 step_num=1
 start_time=$(date +%s)
 
 # installation loop
-for step in "${steps[@]}"
+for step in "${!steps[@]}"
 do
 	printf "\n"
 	PrintBoxLine "#"
 	PrintBoxLine " "
 	PrintBoxLine " " "STEP $step_num"
-	PrintBoxLine " " "${step}"
+	PrintBoxLine " " "${STEP_LIST[${steps[$step]}]}"
 	PrintBoxLine " "
 	PrintBoxLine "#"
 
-	case "$step_num" in
-		"1") CreateEnvFile
+	case "${steps[$step]}" in
+		"CreateEnvFile") CreateEnvFile
 		;;
-		"2") UpgradeApt
+		"UpgradeApt") UpgradeApt
 		;;
-		"3") PythonMakeVenv
+		"PythonMakeVenv") PythonMakeVenv
 		;;
-		"4") PythonUpgradePip
+		"PythonUpgradePip") PythonUpgradePip
 		;;
-		"5") PythonInstallReqs
+		"PythonInstallReqs") PythonInstallReqs
 		;;
-		"6") DockerInstallEngine
+		"DockerInstallEngine") DockerInstallEngine
 		;;
-		"7") DockerRunContainers
+		"DockerRunContainers") DockerRunContainers
 		;;
-		"8") InstallStartupScripts
+		"InstallStartupScripts") InstallStartupScripts
 		;;
 	esac
 
