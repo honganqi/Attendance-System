@@ -19,10 +19,14 @@ import configparser
 
 config = configparser.ConfigParser()
 config.read(os.path.join(os.path.dirname(__file__), '..', 'terminal.ini'))
-TIMEOUT_BEFORE_MINIMIZE = config['SETTINGS']['TimeoutBeforeMinimize']	# minimizing this window shows the clock that's supposed to run behind
 SERVER_HOST = config['SERVER']['Host']
 ATTENDANCE_API_ROUTE = config['SERVER']['AttendanceApiRoute']
 TEST_MODE = config['SETTINGS']['TestMode']
+
+try:
+	TIMEOUT_BEFORE_MINIMIZE = int(config['SETTINGS']['TimeoutBeforeMinimize'])	# minimizing this window shows the clock that's supposed to run behind
+except ValueError:
+	TIMEOUT_BEFORE_MINIMIZE = 30
 
 # VARIABLES
 taptime = 0
