@@ -310,9 +310,6 @@ class UserFrame(tk.Frame):
 					if hasattr(record, 'error'):
 						raise Exception(record.error)
 					
-					if hasattr(record, 'notfound'):
-						raise Exception("ID number not assigned to any student")
-
 					student = record.student
 					transaction = record.transaction
 
@@ -342,7 +339,7 @@ class UserFrame(tk.Frame):
 			else:
 				errorMessage = str(e)
 			self.showError(errorMessage)
-			if hasattr(record, 'notfound'):
+			if hasattr(record, 'error'):
 				return "NOTFOUND"
 
 	def wipeFrame(self):

@@ -13,62 +13,21 @@ export const actions: Actions = {
 			messageType: response?.messageType
 		}
 		
-		// const { lastname, firstname, middlename, suffix, nickname, birthdate, gender } = Object.fromEntries(await request.formData()) as {
-		// 	lastname: string;
-		// 	firstname: string,
-		// 	middlename: string;
-		// 	suffix: string;
-		// 	nickname: string;
-		// 	birthdate: string;
-		// 	gender: string;
-		// };
-
-		// if (!lastname && !firstname && !nickname && (gender !== "male" && gender !== "female")) {
-		// 	return fail(400, {message: "Missing required parameters"})
-		// }
-		
-		// try {
-		// 	const student = await prisma.students.create({
-		// 		data: {
-		// 			lastname,
-		// 			firstname,
-		// 			middlename,
-		// 			suffix,
-		// 			nickname,
-		// 			birthdate: new Date(birthdate),
-		// 			gender,
-		// 			status: true
-		// 		}
-		// 	})
-
-		// 	return {
-		// 		status: 201,
-		// 		message: 'New student added successfully!',
-		// 		messageType: 'variant-filled-success'
-		// 	}
-		// } catch (err) {
-		// 	console.error('Failed to create event. Err: ' + err);
-		// 	return fail(422, { message: 'Event creation failed' });
-		// }
-
-		// return {
-		// 	status: 201
-		// };
 	}
+
 };
 
 /** @type {import('@sveltejs/kit').Load} */
-export const load: PageServerLoad = async () => {
+export const load: PageServerLoad = async ({ url }) => {
 	let students = [];
+	const inactive = url.searchParams.get('inactive') !== null;
 	const response = new Student();
-	const data = await response.getList();
+	const data = await response.getList(inactive ? "only" : "");
 	if (data) {
 		students = data;
 	}
 	return {
 		students,
-		status: response?.status,
-		message: response?.message,
-		messageType: response?.messageType
+		inactive
 	}
 };

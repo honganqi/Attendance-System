@@ -1,5 +1,5 @@
  <script lang="ts">
-    import { Table, tableMapperValues, Drawer, getDrawerStore, getToastStore, type AutocompleteOption, Autocomplete, type PopupSettings, popup, ProgressRadial } from '@skeletonlabs/skeleton';
+    import { Table, tableMapperValues, Drawer, getDrawerStore, getToastStore, type AutocompleteOption, Autocomplete, type PopupSettings, popup, ProgressRadial, Paginator, type PaginationSettings } from '@skeletonlabs/skeleton';
 	import { enhance } from '$app/forms';
 	import Fa from 'svelte-fa';
 	import { faPlus } from '@fortawesome/free-solid-svg-icons';
@@ -29,6 +29,14 @@
 		tableContents.meta = students;
 	}
 
+	let paginationSettings = {
+		page: 0,
+		limit: 25,
+		size: 0,
+		amounts: [10,25,50,100],
+	} satisfies PaginationSettings;
+
+	$: paginationSettings.size = students.length;
 
 
 	async function handleSubmit({ formElement, formData, action, cancel, submitter }) {
@@ -115,5 +123,17 @@
 	<button type="button" class="btn btn-sm h-12 bg-secondary-300-600-token" on:click={getDrawer}><Fa icon={faPlus} class="mr-2" /> Add student</button>
 </div>
 
+<small>{students.length} {data.inactive ? 'inactive' : 'active'} record{students.length == 1 ? '' : 's'}</small>
+
 <Table source={tableContents} interactive={true} on:selected={loadRecord} />
 
+{#if students.length > 0}
+<Paginator bind:settings={paginationSettings} class="mt-5" />
+{/if}
+
+<a
+	href={`/students${data.inactive ? '' : '?inactive'}`}
+	class={`btn btn-sm h-12 mt-12 ${data.inactive ? 'variant-ghost-success' : 'variant-ghost-error'}`}
+	>
+	View {data.inactive ? "active" : "inactive"} records
+</a>

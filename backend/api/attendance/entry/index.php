@@ -15,18 +15,16 @@ if (isset($_GET['idnumber'])) {
     }
 
     if ($record->studentId) {
-        if ($record->studentId != "notfound") {
-            $returnjson['transaction'] = $record->transaction;
-            $student = new Student($record->studentId);
-            if (isset($_GET['test'])) {
-                $student->testRecord();
-            } else {
-                $student->getRecord();
-            }
-            $returnjson['student'] = $student;
+        $returnjson['transaction'] = $record->transaction;
+        $student = new Student($record->studentId);
+        if (isset($_GET['test'])) {
+            $student->testRecord();
         } else {
-            $returnjson['notfound'] = "notfound";
+            $student->getRecord($forAttendance = true);
         }
+        $returnjson['student'] = $student;
+    } else {
+        $returnjson['error'] = $record->transaction['error'];
     }
 }
 

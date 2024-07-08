@@ -4,6 +4,8 @@ class Attendance {
 	public $transaction;
 	private $_dateNow;
 	public $studentId;
+	public $error;
+	public $errorMessage;
 	public function __construct($datestring = '') {
 		$dbconfig = new DbConfig();
 		$this->_pdo = $dbconfig->pdo;
@@ -55,7 +57,7 @@ class Attendance {
 
                 // get student UUID and details from NFC ID
 				$student = new Student();
-                $student->getStudentIDFromIDNumber($idnumber);
+                $data = $student->getStudentIDFromIDNumber($idnumber, $forAttendance = true);
 				if ($student->id) {
 					// userAction defaults to "in" if no entry is found for student yet
 					$inoutInsert = 0;
@@ -97,8 +99,7 @@ class Attendance {
 						$transaction['first'] = true;
 					}
 				} else {
-					$this->studentId = "notfound";
-                    throw new Exception("ID is not assigned to any student");
+                    throw new Exception($data['errorMessage']);
                 }
 
             } else {

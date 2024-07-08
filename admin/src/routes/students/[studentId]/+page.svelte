@@ -204,5 +204,5 @@ class="mt-16 space-y-3"
 bind:this={deleteForm}
 use:enhance={handleSubmit}
 >
-<button type="button" class="btn btn-sm variant-ghost-error cursor-pointer" on:click={deleteRecord}>Delete record</button>
+<button type="button" class="btn btn-sm variant-ringed-error hover:variant-filled-error cursor-pointer" on:click={deleteRecord}>Delete record</button>
 </form>

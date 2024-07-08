@@ -31,8 +31,12 @@ export class Student {
 		}
     }
 
-	async getList() {
-		const response = await fetch(`http://${BACKEND_URL}/api/student/getList`, {
+	async getList(inactive: string = "") {
+		let inactiveParam = "";
+		if (inactive != "" && (inactive == "include" || inactive == "only")) {
+			inactiveParam = `?inactive=${inactive}`;
+		}
+		const response = await fetch(`http://${BACKEND_URL}/api/student/getList${inactiveParam}`, {
 			method: "GET",
 			mode: "cors",
 			cache: "no-cache",

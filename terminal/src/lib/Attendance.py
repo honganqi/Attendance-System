@@ -25,8 +25,8 @@ class Attendance:
                     self.student = json['student']
                 if "transaction" in json:
                     self.transaction = json['transaction']
-                if "notfound" in json:
-                    self.notfound = json['notfound']
+                if "error" in json:
+                    self.error = json['error']
 
                 return json
         except Exception as e:

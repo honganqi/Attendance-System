@@ -29,13 +29,13 @@ class Student {
         }
     }
 
-    public function getList($includeInactive = false) {
+    public function getList($inactive = "") {
         $pdo = $this->_pdo;
         $string = "SELECT id FROM students";
         $args = [];
-        if (!$includeInactive) {
+        if ($inactive == "" || $inactive == "only") {
             $string .= " WHERE status = ?";
-            $args = array(1);
+            $args = $inactive == "" ? array(1) : array(0);
         }
         $query = $pdo->prepare($string);
         $query->execute($args);
@@ -58,11 +58,17 @@ class Student {
         return $students;
     }
 
-    public function getRecord() {
+    public function getRecord($forAttendance = false) {
         try {
+            $string = "";
+            $args = array(':id' => $this->id);
+            if ($forAttendance) {
+                $string = "AND status = :status";
+                $args[':status'] = 1;
+            }
             // fetch record details based on ID
-            $query = $this->_pdo->prepare("SELECT * FROM students WHERE id = ?");
-            $query->execute(array($this->id));
+            $query = $this->_pdo->prepare("SELECT * FROM students WHERE id = :id $string");
+            $query->execute($args);
 
             // check if record exists
             if ($query->rowCount() > 0) {
@@ -205,25 +211,33 @@ class Student {
         return $fullnameSplit;
     }
 
-    public function getStudentIDFromIDNumber($idnumber = '') {
+    public function getStudentIDFromIDNumber($idnumber = '', $forAttendance = false) {
         $returnval = [];
         try {
             if (trim($idnumber) != '') {
-                $query = $this->_pdo->prepare("SELECT id FROM students WHERE idnumber = ?");
-                $query->execute(array($idnumber));
+                $query = $this->_pdo->prepare("SELECT id, status FROM students WHERE idnumber = :idnumber");
+                $query->execute(array(':idnumber' => $idnumber));
 
                 if ($query->rowCount() > 0) {
                     $student = $query->fetch();
-                    $this->id = $student['id'];
-                    $returnval['id'] = $this->id;
+
+                    if ($student['status'] == 1 || !$forAttendance) {
+                        $this->id = $student['id'];
+                        $returnval['id'] = $this->id;
+                    } else {
+                        $returnval['error'] = "inactive";
+                        throw new Exception("ID is assigned to inactive record");
+                    }
                 } else {
+                    $returnval['error'] = "unassigned";
                     throw new Exception("ID is not assigned to any student");
                 }
             } else {
+                $returnval['error'] = "empty";
                 throw new Exception("ID number is empty");
             }
         } catch (Exception $e) {
-            $returnval['error'] = $e->getMessage();
+            $returnval['errorMessage'] = $e->getMessage();
         }
         return $returnval;
     }
