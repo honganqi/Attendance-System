@@ -80,15 +80,26 @@ PrintBoxLine() {
 
 # installation functions
 CreateEnvFile() {
-	source ./helpers/configure_env.sh
+	source ./helpers/1-configure_env.sh
 }
 
 UpgradeApt() {
-	sudo apt update && sudo apt upgrade -y
+	while true; do
+		printf "Do you want to get ${TEXT_COLOR}system updates${RESET}? "
+		read -p "Answer \"no\" only if you have a specific reason to) (default: yes) " get_updates
+		get_updates=${get_updates:-yes}
+		case $get_updates in
+			[Yy]* )
+				sudo apt update && sudo apt upgrade -y
+				break;;
+			[Nn]* | "" ) break;;
+			* ) echo "Please answer yes or no.";;
+		esac
+	done	
 }
 
 PythonMakeVenv() {
-	source ./helpers/1-terminal_create_python_venv.sh
+	source ./helpers/3-terminal_create_python_venv.sh
 }
 
 PythonUpgradePip() {
@@ -96,19 +107,11 @@ PythonUpgradePip() {
 }
 
 PythonInstallReqs() {
-	source ./helpers/2-terminal_install_reqs_in_venv.sh
+	source ./helpers/5-terminal_install_reqs_in_venv.sh
 }
 
 DockerInstallEngine() {
-	source ./helpers/3-docker_install.sh
-}
-
-DockerBuildBackend() {
-	source ./helpers/4-docker_build_backend.sh
-}
-
-DockerBuildAdmin() {
-	source ./helpers/6-docker_build_admin_when_final.sh
+	source ./helpers/6-docker_install.sh
 }
 
 DockerRunContainers() {

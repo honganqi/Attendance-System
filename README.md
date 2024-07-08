@@ -59,9 +59,14 @@ The current main branch of this project is meant to be used in a trusted network
 3. Make the installer executable: `chmod +x ./installer.sh`
 4. Run the installer as root with `sudo -E ./install.sh`.
     - The `-E` option is needed to pass environment variables to the Docker installer script.
-    - The installer will ask for the **username** of the **non-root user** specified in the Raspberry Pi OS Imager customization options screen.
     - See below [Installation: Package Dependencies](./README.md#installation-package-dependencies) for details on what it does. This is a multi-step process which took about 1 hour on my Raspberry Pi 3B.
-5. Reboot the Raspberry Pi after installation is complete. You should see the terminal's clock window after rebooting.
+5. The installer will ask for details:
+    - **username** of the **non-root user**: the one specified in the Raspberry Pi Imager customization options screen
+    - time zone in `Country/City` format: list available in https://timezonedb.com/time-zones and https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+    - backend URL: leave it as `backend` if using the default Docker containers
+    - hostname or IP address of this server: IP address or the hostname specified in the Raspberry Pi Imager customization options screen
+    - database credentials you want to set (optional)
+6. Reboot the Raspberry Pi after installation is complete. You should see the terminal's clock window after rebooting.
 
 ## Installation: Package Dependencies
 I have provided scripts assist in the installation but they are also detailed after this section.
@@ -99,7 +104,7 @@ Several methods can be used to connect the attendance system to the network (lis
 10. Tap the card again to see the details.
 
 ## Test Mode
-* You can enable the terminal's "test mode" by modifying `/terminal/terminal.ini` and setting the `TestMode` variable to `True` (or `False` to disable). Note the capitalized first letter. When enabled, the terminal will simulate the tapping of a Mifare card when the spacebar is pressed. This test will randomly pick from a list of 8 records without adding or modifying anything in the database.
+* You can enable the terminal's "test mode" by modifying `/terminal/terminal.ini` and setting the `TestMode` variable to `True`. Set it to `False` to disable it. Note the capitalized first letter. When enabled, the terminal will simulate the tapping of a Mifare card when the spacebar is pressed. This test will randomly pick from a list of 8 records without adding or modifying anything in the database.
 
 ## Notes
 1. For the production build of the Admin Frontend to accept POST form submissions, an "ORIGIN" IP address or hostname needs to be set to solve the CORS (cross-origin resource sharing) issues. If the server's IP address and the URL of the remote user are different, the site will load but records cannot be changed (POST requests will fail). For example, if the address of the Raspberry Pi server is `raspberrypi.local` or `192.168.1.5` and it is being accessed through "http://localhost" even on the Raspberry Pi itself, you will encounter this issue.

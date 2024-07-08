@@ -30,22 +30,22 @@ else
 fi
 
 export TZ
-read -p "Specify your timezone (currently $TZ): " timezone
+read -p "Specify your timezone (currently: $TZ): " timezone
 timezone=$(escape_string ${timezone:-$TZ})
 
 export BACKEND_URL
 cleaned_backend_url=$(clean_url ${BACKEND_URL})
-read -p "Backend service URL (leave as default if using the default Docker containers) (currently $cleaned_backend_url): " backend_url
+read -p "Backend service URL (leave as default if using the default Docker containers) (currently: $cleaned_backend_url): " backend_url
 backend_url=$(clean_url ${backend_url:-$BACKEND_URL})
 echo $backend_url
 
 export FRONTEND_ORIGIN
 cleaned_frontend_origin=$(clean_url ${FRONTEND_ORIGIN})
-read -p "Hostname or IP address of this server (the hostname you set in Raspberry Pi Imager e.g. raspberrypi.local, attendance.local or an IP address like 192.168.1.6) (currently $cleaned_frontend_origin): " frontend_url
+read -p "Hostname or IP address of this server (the hostname you set in Raspberry Pi Imager e.g. raspberrypi.local, attendance.local or an IP address like 192.168.1.6) (currently: $cleaned_frontend_origin): " frontend_url
 frontend_url=$(clean_url ${frontend_url:-$FRONTEND_ORIGIN})
 
 while true; do
-    read -p "Do you want to modify the database credentials? (no) " modify
+    read -p "Do you want to modify the database credentials? (default: no) " modify
     modify=${modify:-no}
     case $modify in
         [Yy]* )
@@ -66,7 +66,7 @@ while true; do
             mysql_pass=${mysql_pass:-$MYSQL_PASSWORD}
             mysql_host=${mysql_host:-$MYSQL_HOST}
             mysql_root=${mysql_root:-$MARIADB_ROOT_PASSWORD}
-        ;;
+            break;;
         [Nn]* | "" ) break;;
         * ) echo "Please answer yes or no.";;
     esac
@@ -75,7 +75,14 @@ done
 # if the .env file does not exist, create it from the .env.example file
 if [ ! -e "$base/.env" ]
 then
-    cp -n "$base/.env.example" "$base/.env"
+    # if no arguments are given, assume that the script is run as standalone
+    # otherwise, run with the supplied username
+    # -E is added to give user access to environment variables (PATH)
+    if [ ! -z "$user" ]; then
+        sudo -E -u ${user} cp -n "$base/.env.example" "$base/.env"
+    else
+        cp -n "$base/.env.example" "$base/.env"
+    fi
 fi
 
 # finally set the environment variables
