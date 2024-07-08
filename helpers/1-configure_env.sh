@@ -85,6 +85,19 @@ then
     fi
 fi
 
+# if the terminal.ini file does not exist, create it from the .env.example file
+if [ ! -e "$base/terminal/terminal.ini" ]
+then
+    # if no arguments are given, assume that the script is run as standalone
+    # otherwise, run with the supplied username
+    # -E is added to give user access to environment variables (PATH)
+    if [ ! -z "$user" ]; then
+        sudo -E -u ${user} cp -n "$base/terminal/terminal.ini.example" "$base/terminal/terminal.ini"
+    else
+        cp -n "$base/terminal/terminal.ini.example" "$base/terminal/terminal.ini"
+    fi
+fi
+
 # finally set the environment variables
 sed -i "s/TZ=.*/TZ=$timezone/" "$base/.env"
 sed -i "s/BACKEND_URL=.*/BACKEND_URL=$backend_url/" "$base/.env"
