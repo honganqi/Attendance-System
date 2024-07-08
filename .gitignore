@@ -11,9 +11,6 @@ admin/package
 admin/vite.config.js.timestamp-*
 admin/vite.config.ts.timestamp-*
 
-backend/config/initial_db/*
-!backend/config/initial_db/attendance_sync.sql.structure
-!backend/config/initial_db/initial_db.sql.structure
 backend/photos/students/*
 !backend/photos/students/id_placeholder.jpg
 !backend/photos/students/index.html
