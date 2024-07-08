@@ -146,11 +146,16 @@ class Clock(tk.Frame):
 
 
 class NumberDisplay(tk.Toplevel):
-	def __init__(self):
+	def __init__(self, container):
 		super().__init__()
 		
+		screen_width = container.winfo_screenwidth()
+		window_width = 350
+		window_height = 60
+		xpos = screen_width - window_width
+		ypos = 0
+		self.geometry(f"{window_width}x{window_height}+{xpos}+{ypos}")
 		self.text = Text(self, font=('arial', 24, 'bold'), bg="white", wrap="word", borderwidth=0, relief="flat", height=1, highlightthickness=0)
-		#self.text.configure(state="disabled")
 		self.text.pack(expand=True, fill='both')
 
 		# Bind the left mouse button click event to the label
@@ -212,7 +217,7 @@ class Terminal(tk.Tk):
 		self.clock.grid_columnconfigure(0, weight=1)
 
 		# Create the NumberDisplay instance
-		self.numberDisplay = NumberDisplay()
+		self.numberDisplay = NumberDisplay(self)
 		self.numberDisplay.title("ID Display")
 
 		self.directory = os.path.dirname(os.path.realpath(__file__))
@@ -257,33 +262,15 @@ class UserFrame(tk.Frame):
 		self.framewidth = framewidth
 		self.frameheight = frameheight
 
-		# NAME font is 3% of frame size
-		# ACTION font is 2.0% of frame size
-		# LOG font is 1.0% of frame size
+		# NICKNAME font is 5% of frame size
+		# FULLNAME font is 2% of frame size
 		nickname_FontSize = int(framewidth * 0.05)
-		self.fullname_FontSize = int(framewidth * 0.020)
-		self.userAction_FontSize = int(framewidth * 0.03)
-		self.userLog_FontSize = int(framewidth * 0.011)
-		userLog_IconSize = int(self.userLog_FontSize*1.6)
-		self.gatepass_FontSize = int(framewidth * 0.011)
-		
-		if clf is None:
-			self.userAction_FontSize = int(framewidth * 0.02)
+		self.fullname_FontSize = int(framewidth * 0.02)
 		
 		# primary frames
-		# self.photoFrame = Frame(thisFrame, width=int(framewidth*0.4), padx=int(framewidth*0.03), bg="white")
-		# infoFrameOuter = Frame(thisFrame, width=int(framewidth*0.6), height=int(frameheight), bg="white")
 		infoFrameOuter = Frame(thisFrame, width=int(framewidth), height=int(frameheight), bg="red")
-		#infoFrame = Frame(infoFrameOuter, bg="yellow")
-		#infoFrame.pack(side="top", anchor="nw", fill="both", expand=True)
-
-		#self.signin = self.imgResize(os.path.join(controller.directory, "signin.png"), self.userAction_FontSize)
-		#self.signout = self.imgResize(os.path.join(controller.directory, "signout.png"), self.userAction_FontSize)
-		#self.login = self.imgResize(os.path.join(controller.directory, "signin.png"), userLog_IconSize)
-		#self.logout = self.imgResize(os.path.join(controller.directory, "signout.png"), userLog_IconSize)
 
 		# name
-		#self.nameFrame = Frame(infoFrame, bg="green")
 		nicknameframe = Frame(infoFrameOuter, bg="white")
 		nicknameframe.pack(side="top", anchor="nw", fill="both", expand=True)
 		fullnameFrame = Frame(infoFrameOuter, bg="white")
@@ -294,19 +281,7 @@ class UserFrame(tk.Frame):
 		self.fullname = Text(fullnameFrame, font=('arial', self.fullname_FontSize), bg="white", wrap="word", borderwidth=0, relief="flat", height=1, highlightthickness=0)
 		self.fullname.pack(fill="both", expand=True)
 		self.fullname.tag_configure("centerText", justify="center")
-		#self.nameFrame.pack(side="top", fill="both", expand=True)
 
-		#canvas = Canvas(infoFrame, width=int(framewidth*0.5), height=2, bd=0, highlightthickness=0)
-		#canvas.pack(side="top",expand=False)
-		#canvas.create_line(0, 0,int(canvas.winfo_width()*0.7),0)
-
-		# self.actionFrame = Frame(infoFrame, bg="white")
-		# self.userAction = Label(self.actionFrame, font=('arial', self.userAction_FontSize, 'bold'), anchor="nw", justify=LEFT, bg="white")
-		# self.userAction.pack(side="top", fill="both", expand=True)
-		# self.actionFrame.pack(side="top", fill="both", expand=False)
-
-		#self.photoFrame.grid(row=0, column=0, sticky="nsew")
-		#self.photoFrame.pack_propagate(False)
 		infoFrameOuter.grid(row=0, column=1, sticky="nsew")
 		infoFrameOuter.pack_propagate(False)
 		thisFrame.pack(side=TOP, fill=BOTH)
@@ -315,7 +290,7 @@ class UserFrame(tk.Frame):
 		thisFrame.columnconfigure(0, weight=35)
 		thisFrame.columnconfigure(1, weight=65)
 
-	def loadID(self, idnumber, testMode: False):
+	def loadID(self, idnumber, testMode=False):
 		global previous_user
 		global previous_type
 
@@ -332,7 +307,6 @@ class UserFrame(tk.Frame):
 						raise Exception(record.error)
 					
 					if hasattr(record, 'notfound'):
-						#raise Exception("ID number not assigned to any student\n" + idnumber)
 						raise Exception("ID number not assigned to any student")
 
 					student = record.student
@@ -343,61 +317,6 @@ class UserFrame(tk.Frame):
 						fullname=student['fullname'],
 						age=""
 					)
-
-
-					'''
-					if "class" not in json_data or ("class" in json_data and "class" == ""):
-						self.className.destroy()
-					else:
-						self.className.insert("1.0", json_data["class"])
-
-					# json response should return a "double" if tapped multiple times in quick succession (left on scanner)
-					# if "double" not in json_data: something needs to be done with current action, NOT get current time but get last recorded time
-					if "double" in json_data:
-						self.userAction["text"] = json_data["double"]["time"]
-						json_data["inoutInsert"] = json_data["double"]["action"]
-					else:
-						self.userAction["text"] = time.strftime('%r')
-
-					if json_data["inoutInsert"] == 1:
-						action_icon = self.signout
-						compound_dir = "right"
-						self.userAction["text"] = self.userAction["text"] + " "
-					else:
-						action_icon = self.signin
-						compound_dir = "left"
-						self.userAction["text"] = " " + self.userAction["text"]
-
-					self.userAction.configure(image=action_icon, compound=compound_dir)
-					self.userAction.image=action_icon
-					if "photo" not in json_data or ("photo" in json_data and json_data["photo"] == ""):
-						photo = "public/img/student_id_placeholder.jpg"
-					elif type(json_data["photo"]) == dict:
-						photo_year_list = json_data["photo"].keys()
-						photo_most_recent_index = list(photo_year_list)[0]
-						photo = json_data["photo"][photo_most_recent_index]
-					try:
-						photodata = self.controller.testConnection(photo, "content")
-						if photodata != False:
-							image = BytesIO(photodata)
-						else:
-							image = False
-					except Exception as e:
-						image = False
-						
-					if image != False:
-						try:
-							#img = self.controller.placeholder
-							img = self.imgResize(image, int(self.frameheight*0.7))
-							self.userPhoto.pack_forget()
-							self.userPhoto.destroy()
-							self.userPhoto = Label(self.photoFrame, text="", width=int(self.framewidth*0.3), bg="white")
-							self.userPhoto.pack(side="top", fill="both", expand=True)
-							self.userPhoto.configure(image=img)
-							self.userPhoto.image=img
-						except OSError as e:
-							print("Image error: " + str(e))
-					'''
 
 				except ValueError as e:
 					print('ValueError')
@@ -435,22 +354,6 @@ class UserFrame(tk.Frame):
 		self.nickname.tag_add("centerText", "1.0", "end")
 		self.fullname.tag_add("centerText", "1.0", "end")
 
-		'''
-		#reset current action section
-		self.userAction.pack_forget()
-		self.userAction.destroy()
-		self.userAction = Label(self.actionFrame, font=('arial', self.userAction_FontSize, 'bold'), anchor="nw", justify=LEFT, bg="white")
-		self.userAction.pack(side="top", fill="both", expand=True)
-
-		#reset photo section
-		self.userPhoto.pack_forget()
-		self.userPhoto.destroy()
-		self.userPhoto = Label(self.photoFrame, text="", width=int(self.framewidth*0.3), bg="white")
-		self.userPhoto.pack(side="top", fill="both", expand=True)
-		#self.userPhoto.configure(image=self.controller.placeholder)
-		#self.userPhoto.image=self.controller.placeholder
-		'''
-
 	def showError(self, errorMessage, sysError=False):
 		self.wipeFrame()
 		self.reinitializeFrame(
@@ -461,7 +364,6 @@ class UserFrame(tk.Frame):
 		if sysError == True:
 			self.controller.iconify()
 			self.controller.deiconify()
-
 
 	def imgResize(self, filename, maxheight):
 		try:
@@ -505,8 +407,8 @@ terminal.title("Attendance Terminal")
 
 
 
-# Function to close the RFID window after some inactivity (modify the TIMEOUT_BEFORE_MINIMIZE variable)
-def close_rfid_window():
+# Minimize the information window after a period of inactivity (modify the TIMEOUT_BEFORE_MINIMIZE variable)
+def minimizeInfoWindow():
 	terminal.withdraw()
 	terminal.numberDisplay.withdraw()
 
@@ -519,13 +421,12 @@ def connected(tag):
 	clf.device.turn_on_led_and_buzzer() # LED should go red with a brief buzzer sound
 
 	
-	# reverse the bytes found in tag since that's how our RFID cards were found and programmed in 2013
+	# reverse the bytes found in tag
 	number.reverse()
 	idnumber = ''.join(str(c) for c in number)
 	
 	# show ID
-	# root.info('Loading ID...')
-	idResult = terminal.frame.loadID(idnumber)
+	idResult = terminal.frame.loadID(idnumber, testMode=False)
 	if (idResult is not None):
 		terminal.deiconify()
 		terminal.frame.showNumber(idnumber)
@@ -538,8 +439,8 @@ def connected(tag):
 	if timer_thread and timer_thread.is_alive():
 		timer_thread.cancel()
 
-	# Start the timer to close the RFID window after 30 seconds of inactivity
-	timer_thread = threading.Timer(TIMEOUT_BEFORE_MINIMIZE, close_rfid_window)
+	# Start the timer to minimize the information window after a period of inactivity
+	timer_thread = threading.Timer(TIMEOUT_BEFORE_MINIMIZE, minimizeInfoWindow)
 	timer_thread.start()
 
 
