@@ -11,6 +11,7 @@ class DbConfig {
 	public string $message;
 	
 	function __construct($remote = null) {
+		date_default_timezone_set(getenv('TZ'));
 		if (isset($remote)) {
 			$this->_host = getenv('REMOTE_MYSQL_HOST');
 			$this->_username = getenv('REMOTE_MYSQL_USER');
