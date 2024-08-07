@@ -85,7 +85,7 @@
 		<AppBar>
 			<svelte:fragment slot="lead">
 				<a href="/" id="siteTitleHeader" class="text-3xl font-bold">
-					<img src="img/logo_header.png" alt="Attendance" style="max-height: 35px;"/>
+					<img src="/img/logo_header.png" alt="Attendance" style="max-height: 35px;"/>
 				</a>
 			</svelte:fragment>
 			<svelte:fragment slot="trail">
