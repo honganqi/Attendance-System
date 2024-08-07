@@ -35,7 +35,7 @@
 		// Matches the data-popup value on your popup element
 		target: 'popupProfile',
 		// Defines which side of your trigger the popup will appear
-		placement: 'bottom',
+		placement: 'bottom-end',
 	};
 </script>
 
@@ -47,11 +47,22 @@
 	<svelte:fragment slot="header">
 		<!-- App Bar -->
 		<AppBar>
-			<svelte:fragment slot="lead"><a href="/" id="siteTitleHeader" class="text-3xl font-bold">Attendance</a></svelte:fragment>
+			<svelte:fragment slot="lead">
+				<a href="/" id="siteTitleHeader" class="text-3xl font-bold hidden lg:block">Attendance</a>
+			</svelte:fragment>
+			<svelte:fragment slot="default">
+				<div class="flex gap-x-2 lg:hidden">
+					{#each sitePages as page}
+					<a href={`/${page.id}`} class="btn btn-sm variant-ghost-primary hover:variant-filled-primary flex lg:hidden">{page.label}</a>
+					{/each}
+				</div>
+			</svelte:fragment>
 			<svelte:fragment slot="trail">
-				{#each sitePages as page}
-				<a href={`/${page.id}`} class="btn btn-sm variant-ghost-primary hover:variant-filled-primary flex lg:hidden">{page.label}</a>
-				{/each}
+				<div class="hidden lg:block">
+					{#each sitePages as page}
+					<a href={`/${page.id}`} class="btn btn-sm variant-ghost-primary hover:variant-filled-primary flex lg:hidden">{page.label}</a>
+					{/each}	
+				</div>
 				<button type="button" use:popup={popupProfile} class="rounded-full bg-surface-300-600-token p-4">
 					<Fa icon={faUser} fw />
 				</button>
@@ -60,21 +71,17 @@
 						{#if $page.data.session.user?.image}
 						<div class="flex items-center gap-x-2 font-bold"><Avatar {...user} /> {$page.data.session.user?.name ?? "User"}</div>
 						{/if}
-					{/if}
-					<li class="flex justify-between items-center space-x-1"><div class="flex-initial"><Fa icon={faMoon} fw /> </div> <div class="flex-1">Dark Mode </div> <div><LightSwitch /></div></li>
-					<!--
-					<hr class="my-4">
+					{/if}					
+					<!-- <hr class="my-4"> -->
 					<div>
 						<ul class="space-y-2">
-							<li class="flex justify-between items-center space-x-1"><div class="flex-initial"><Fa icon={faBell} fw /> </div> <div class="flex-1">Notifications</div></li>
-							<li class="flex justify-between items-center space-x-1"><div class="flex-initial"><Fa icon={faGear} fw /> </div> <div class="flex-1">Settings</div></li>
+							<!-- <li class="flex justify-between items-center space-x-1"><div class="flex-initial"><Fa icon={faBell} fw /> </div> <div class="flex-1">Notifications</div></li> -->
+							<!-- <li class="flex justify-between items-center space-x-1"><div class="flex-initial"><Fa icon={faGear} fw /> </div> <div class="flex-1">Settings</div></li> -->
 							<li class="flex justify-between items-center space-x-1"><div class="flex-initial"><Fa icon={faMoon} fw /> </div> <div class="flex-1">Dark Mode </div> <div><LightSwitch /></div></li>
-							<hr>
-							<li class=""><a href="/auth/signout" class="flex justify-between items-center space-x-1"><div class="flex-initial"><Fa icon={faRightFromBracket} fw /> </div> <div class="flex-1">Log Out </div></a></li>
+							<!-- <hr> -->
+							<!-- <li class=""><a href="/auth/signout" class="flex justify-between items-center space-x-1"><div class="flex-initial"><Fa icon={faRightFromBracket} fw /> </div> <div class="flex-1">Log Out </div></a></li> -->
 						</ul>
 					</div>
-						
-					-->
 					<div class="arrow bg-surface-100-800-token" />
 				</div>
 			</svelte:fragment>
