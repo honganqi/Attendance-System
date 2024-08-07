@@ -28,7 +28,8 @@ class Attendance {
 			MIN(CASE WHEN userAction = 0 THEN timeEntry ELSE NULL END) AS 'in',
 			MAX(CASE WHEN userAction = 1 THEN timeEntry ELSE NULL END) AS 'out',
 			nickname as name,
-			CONCAT(lastname, ', ', firstname, IF (suffix IS NULL or suffix = '', '', CONCAT(' ', suffix)), IF (middlename IS NULL or middlename = '', '', CONCAT(' ', SUBSTR(middlename, 1, 1), '.'))) as fullname
+			CONCAT(lastname, ', ', firstname, IF (suffix IS NULL or suffix = '', '', CONCAT(' ', suffix)), IF (middlename IS NULL or middlename = '', '', CONCAT(' ', SUBSTR(middlename, 1, 1), '.'))) as fullname,
+			students.id
 		FROM
 			attendance
 		JOIN students ON attendance.student = students.id
@@ -37,6 +38,25 @@ class Attendance {
 			DATE(timeEntry)
 		ORDER BY
 			timeEntry";
+		$query = $this->_pdo->prepare($string);
+		$query->execute(array($this->_dateNow));
+
+		if ($query->rowCount() > 0) {
+			while ($row = $query->fetch()) {
+				$data[] = $row;
+			}
+		}
+
+		return $data;
+	}
+
+	function getStudentRawEntries($studentId) {
+		$data = [];
+		$string = "
+		SELECT timeEntry, userAction FROM attendance
+		WHERE DATE(timeEntry) = ?
+		ORDER BY timeEntry
+		";
 		$query = $this->_pdo->prepare($string);
 		$query->execute(array($this->_dateNow));
 

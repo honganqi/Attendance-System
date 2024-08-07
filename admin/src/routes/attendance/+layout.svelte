@@ -5,7 +5,6 @@
 
 	import { DatePicker } from '@svelte-plugins/datepicker';
     import { goto } from '$app/navigation';
-    import { onMount } from 'svelte';
     import { page } from '$app/stores';
 
 	const headerDateFormat = { month: 'long', day: 'numeric', year: 'numeric', weekday: 'long' };
@@ -33,8 +32,12 @@
         }
         let dateString = year + month + date;
         let newURL = `/attendance/date/${dateString}`;
+        if (Object.hasOwn($page.params, 'studentId')) {
+            newURL = `/attendance/date/${dateString}/${$page.params.studentId}`;
+        }
+
         if ($page.url.pathname != newURL) {
-            goto(`/attendance/date/${dateString}`);
+            goto(newURL);
         }
     }
 	const onChange = () => {
@@ -54,12 +57,14 @@
 	<h1>Attendance</h1>
 </div>
 
-<DatePicker bind:isOpen bind:startDate={displayDate}>
-    <button class="btn btn-sm chip variant-filled" on:click={toggleDatePicker}>
-        <Fa icon={faCalendar} class="mr-2" />
-        {formattedDisplayDate}
-    </button>
-    <input type="hidden" placeholder="Select date" bind:value={formattedDisplayDate} />
-</DatePicker>
+<div class="mb-4">
+    <DatePicker bind:isOpen bind:startDate={displayDate}>
+        <button class="btn btn-sm chip variant-filled" on:click={toggleDatePicker}>
+            <Fa icon={faCalendar} class="mr-2" />
+            {formattedDisplayDate}
+        </button>
+        <input type="hidden" placeholder="Select date" bind:value={formattedDisplayDate} />
+    </DatePicker>    
+</div>
 
 <slot />
