@@ -1,8 +1,8 @@
-/**
- * a store that's supposed to say whether the content to be loaded has "items-center" in its container class
- */
-
 import { writable } from "svelte/store";
+import { browser } from '$app/environment';
 
 export const activeSiteSection = writable('');
 export const currentPage = writable('');
+
+// Session based theme store. Grabs the current theme from the current body.
+export const storeTheme = writable(browser ? document.body.getAttribute('data-theme') ?? '' : 'skeleton');

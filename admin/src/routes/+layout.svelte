@@ -12,6 +12,8 @@
 	import { faUser, faClock, faMoon } from '@fortawesome/free-solid-svg-icons'
 
 	import { page } from '$app/stores';
+	import { storeTheme } from '$lib/stores';
+	import { browser } from '$app/environment';
 
 	initializeStores();
 
@@ -37,6 +39,40 @@
 		// Defines which side of your trigger the popup will appear
 		placement: 'bottom-end',
 	};
+
+	// Set body `data-theme` based on current theme status
+	storeTheme.subscribe(setBodyThemeAttribute);
+	function setBodyThemeAttribute(): void {
+		if (!browser) return;
+		document.body.setAttribute('data-theme', $storeTheme);
+	}
+
+	const themes = [
+		{ type: 'skeleton', name: 'Skeleton', icon: '💀' },
+		{ type: 'wintry', name: 'Wintry', icon: '🌨️' },
+		{ type: 'modern', name: 'Modern', icon: '🤖' },
+		{ type: 'rocket', name: 'Rocket', icon: '🚀' },
+		{ type: 'seafoam', name: 'Seafoam', icon: '🧜‍♀️' },
+		{ type: 'vintage', name: 'Vintage', icon: '📺' },
+		{ type: 'sahara', name: 'Sahara', icon: '🏜️' },
+		{ type: 'hamlindigo', name: 'Hamlindigo', icon: '👔' },
+		{ type: 'gold-nouveau', name: 'Gold Nouveau', icon: '💫' },
+		{ type: 'crimson', name: 'Crimson', icon: '⭕' }
+	];
+
+	let theme: string;
+	$: {
+		if (theme != $storeTheme) {
+			setTheme();
+		}
+	}
+
+	const setTheme = () => {
+		if (theme) {
+			$storeTheme = theme;
+			document.body.setAttribute('data-theme', theme);
+		}
+	};
 </script>
 
 <Modal regionBody="overflow-auto"/>
@@ -48,14 +84,9 @@
 		<!-- App Bar -->
 		<AppBar>
 			<svelte:fragment slot="lead">
-				<a href="/" id="siteTitleHeader" class="text-3xl font-bold hidden lg:block">Attendance</a>
-			</svelte:fragment>
-			<svelte:fragment slot="default">
-				<div class="flex gap-x-2 lg:hidden">
-					{#each sitePages as page}
-					<a href={`/${page.id}`} class="btn btn-sm variant-ghost-primary hover:variant-filled-primary flex lg:hidden">{page.label}</a>
-					{/each}
-				</div>
+				<a href="/" id="siteTitleHeader" class="text-3xl font-bold">
+					<img src="img/logo_header.png" alt="Attendance" style="max-height: 35px;"/>
+				</a>
 			</svelte:fragment>
 			<svelte:fragment slot="trail">
 				<div class="hidden lg:block">
@@ -73,7 +104,23 @@
 						{/if}
 					{/if}					
 					<!-- <hr class="my-4"> -->
-					<div>
+					<div class="space-y-4 lg:space-y-2">
+						<ul class="lg:hidden space-y-2">
+							{#each sitePages as page}
+							<li><a href={`/${page.id}`} class="flex justify-between items-center space-x-1 hover:variant-filled-primary p-2 -mx-1 rounded-md"><div class="flex-initial"><Fa icon={page.icon} fw /></div> <div class="flex-1">{page.label}</div></a></li>
+							{/each}
+						</ul>
+						<hr class="divider lg:hidden">
+						<div>
+							Theme
+							<select class="input" bind:value={theme}>
+								<!-- , badge -->
+								{#each themes as { icon, name, type }}
+									<option value={type}>{icon} {name}</option>
+								{/each}
+							</select>
+						</div>
+
 						<ul class="space-y-2">
 							<!-- <li class="flex justify-between items-center space-x-1"><div class="flex-initial"><Fa icon={faBell} fw /> </div> <div class="flex-1">Notifications</div></li> -->
 							<!-- <li class="flex justify-between items-center space-x-1"><div class="flex-initial"><Fa icon={faGear} fw /> </div> <div class="flex-1">Settings</div></li> -->
