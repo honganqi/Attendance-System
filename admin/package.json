@@ -34,6 +34,7 @@
     "@fortawesome/free-solid-svg-icons": "^6.5.2",
     "@svelte-plugins/datepicker": "^1.0.9",
     "@sveltejs/adapter-node": "^5.0.1",
-    "@types/node": "^20.12.10"
+    "@types/node": "^20.12.10",
+    "@vincjo/datatables": "^1.14.10"
   }
 }
