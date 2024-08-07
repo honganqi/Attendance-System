@@ -29,13 +29,13 @@ class Student {
         }
     }
 
-    public function getList($inactive = "") {
+    public function getList($inactive = false) {
         $pdo = $this->_pdo;
-        $string = "SELECT id FROM students";
-        $args = [];
-        if ($inactive == "" || $inactive == "only") {
-            $string .= " WHERE status = ?";
-            $args = $inactive == "" ? array(1) : array(0);
+        $string = "SELECT id FROM students WHERE status = ?";
+        if ($inactive) {
+            $args = array(0);
+        } else {
+            $args = array(1);        
         }
         $query = $pdo->prepare($string);
         $query->execute($args);

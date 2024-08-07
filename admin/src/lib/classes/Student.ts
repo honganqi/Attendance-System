@@ -1,4 +1,4 @@
-import { BACKEND_URL } from "$env/static/private";
+import { goToEndpoint, postToEndpoint } from "$lib/data/api";
 
 export class Student {
     id!: string;
@@ -31,42 +31,21 @@ export class Student {
 		}
     }
 
-	async getList(inactive: string = "") {
-		let inactiveParam = "";
-		if (inactive != "" && (inactive == "include" || inactive == "only")) {
-			inactiveParam = `?inactive=${inactive}`;
+	async getList(inactive: boolean = false) {
+		try {
+			const data = await goToEndpoint('/student/getList/', {inactive});
+			if (data) {
+				return data;
+			}
 		}
-		const response = await fetch(`http://${BACKEND_URL}/api/student/getList${inactiveParam}`, {
-			method: "GET",
-			mode: "cors",
-			cache: "no-cache",
-			headers: {
-				"Content-Type": "application/json",
-			},
-			redirect: "follow",
-			referrerPolicy: "no-referrer",
-			//body: JSON.stringify({id: this.id})
-		});
-		const data = await response.json();
-
-		if (data) {
-			return data;
+		catch (error) {
+			console.log(error);
 		}
 	}
 
     async getRecord() {
 		try {
-			const response = await fetch(`http://${BACKEND_URL}/api/student/get/?id=${this.id}`, {
-				method: "GET",
-				mode: "cors",
-				cache: "no-cache",
-				headers: {
-					"Content-Type": "application/json",
-				},
-				redirect: "follow",
-				referrerPolicy: "no-referrer",
-			});
-			const data = await response.json();
+			const data = await goToEndpoint('/student/get/', {id: this.id})
 			if (data) {
 				if (data.birthdate) {
 					this.birthdate = new Date(data.birthdate)
@@ -122,18 +101,10 @@ export class Student {
 
 	async getStudentIDFromIDNumber(idnumber: string) {
 		try {
-			const response = await fetch(`http://${BACKEND_URL}/api/student/get/?idnumber=${idnumber}`, {
-				method: "GET",
-				mode: "cors",
-				cache: "no-cache",
-				headers: {
-					"Content-Type": "application/json",
-				},
-				redirect: "follow",
-				referrerPolicy: "no-referrer",
-			});
-			const data = await response.json();
-			return data.student.id;
+			const data = await goToEndpoint('/student/get/', {idnumber});
+			if (data) {
+				return data.student.id;
+			}
 		}
 		catch (err) {
 
@@ -155,22 +126,15 @@ export class Student {
 
 	async createRecord(newData) {
 		try {
-			const response = await fetch(`http://${BACKEND_URL}/api/student/create/`, {
-				method: "POST",
-				mode: "cors",
-				cache: "no-cache",
-				headers: {
-					"Content-Type": "application/json",
-				},
-				redirect: "follow",
-				referrerPolicy: "no-referrer",
-				body: JSON.stringify({newData})
-			});
-			const data = await response.json();
-			return {
-				status: 201,
-				message: data.message,
-				messageType: `variant-filled-${data.messageType}`
+			const response = await postToEndpoint('/student/create/', {newData});
+			if (response) {
+				const { status, message, messageType, data } = response;
+				return {
+					status,
+					message,
+					messageType,
+					data
+				}	
 			}
 		}
 		catch (err) {
@@ -180,23 +144,15 @@ export class Student {
 
 	async updateRecord(newData) {
 		try {
-			const id = this.id;
-			const response = await fetch(`http://${BACKEND_URL}/api/student/update/?id=${this.id}`, {
-				method: "POST",
-				mode: "cors",
-				cache: "no-cache",
-				headers: {
-					"Content-Type": "application/json",
-				},
-				redirect: "follow",
-				referrerPolicy: "no-referrer",
-				body: JSON.stringify({id, newData})
-			});
-			const data = await response.json();
-			return {
-				status: 201,
-				message: data.message,
-				messageType: `variant-filled-${data.messageType}`
+			const response = await postToEndpoint('/student/update/', {id: this.id, newData}, {id: this.id});
+			if (response) {
+				const { status, message, messageType, data } = response;
+				return {
+					status,
+					message,
+					messageType,
+					data
+				}	
 			}
 		}
 		catch (err) {
@@ -206,23 +162,15 @@ export class Student {
 
 	async deleteRecord() {
 		try {
-			const id = this.id;
-			const response = await fetch(`http://${BACKEND_URL}/api/student/update/?id=${this.id}`, {
-				method: "POST",
-				mode: "cors",
-				cache: "no-cache",
-				headers: {
-					"Content-Type": "application/json",
-				},
-				redirect: "follow",
-				referrerPolicy: "no-referrer",
-				body: JSON.stringify({id, delete: true})
-			});
-			const data = await response.json();
-			return {
-				status: 201,
-				message: data.message,
-				messageType: `variant-filled-${data.messageType}`
+			const response = await postToEndpoint('/student/update/', {id: this.id, delete: true}, {id: this.id});
+			if (response) {
+				const { status, message, messageType, data } = response;
+				return {
+					status,
+					message,
+					messageType,
+					data
+				}	
 			}
 		}
 		catch (err) {
@@ -232,23 +180,15 @@ export class Student {
 
 	async updateStatus(newStatus) {
 		try {
-			const id = this.id;
-			const response = await fetch(`http://${BACKEND_URL}/api/student/updateStatus/?id=${this.id}`, {
-				method: "POST",
-				mode: "cors",
-				cache: "no-cache",
-				headers: {
-					"Content-Type": "application/json",
-				},
-				redirect: "follow",
-				referrerPolicy: "no-referrer",
-				body: JSON.stringify({id, newStatus})
-			});
-			const data = await response.json();
-			return {
-				status: 201,
-				message: data.message,
-				messageType: `variant-filled-${data.messageType}`
+			const response = await postToEndpoint('/student/updateStatus/', {id: this.id, newStatus}, {id: this.id});
+			if (response) {
+				const { status, message, messageType, data } = response;
+				return {
+					status,
+					message,
+					messageType,
+					data
+				}	
 			}
 		}
 		catch (err) {

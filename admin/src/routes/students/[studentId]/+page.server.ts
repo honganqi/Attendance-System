@@ -12,51 +12,6 @@ export const actions: Actions = {
 			message: response?.message,
 			messageType: response?.messageType
 		}
-		/*
-		const { lastname, firstname, middlename, suffix, nickname, birthdate, gender } = Object.fromEntries(await request.formData()) as {
-			lastname: string;
-			firstname: string,
-			middlename: string;
-			suffix: string;
-			nickname: string;
-			birthdate: string;
-			gender: string;
-		};
-
-		if (!lastname && !firstname && !nickname && (gender !== "male" && gender !== "female")) {
-			return fail(400, {message: "Missing required parameters"})
-		}
-		
-		try {
-			const student = await prisma.students.update({
-				where: {
-					id: params.studentId,
-				},
-				data: {
-					lastname,
-					firstname,
-					middlename,
-					suffix,
-					nickname,
-					birthdate: new Date(birthdate),
-					gender
-				}
-			})
-
-			return {
-				status: 201,
-				message: 'Student details updated successfully!',
-				messageType: 'variant-filled-success'
-			}
-		} catch (err) {
-			console.error('Failed to create event. Err: ' + err);
-			return fail(422, { message: 'Event creation failed' });
-		}
-		*/
-
-		return {
-			status: 201
-		};
 	},
 
 	updateStatus: async ({ request, params }) => {
@@ -95,9 +50,9 @@ export const actions: Actions = {
 /** @type {import('@sveltejs/kit').Load} */
 export const load: PageServerLoad = async ({ locals, params }) => {
 	const student = new Student(params.studentId);
-	await student.getRecord();
+	const data = await student.getRecord();
 
 	return {
-		student: JSON.stringify(student)
+		student: data
 	};
 };

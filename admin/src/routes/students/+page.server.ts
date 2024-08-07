@@ -22,7 +22,7 @@ export const load: PageServerLoad = async ({ url }) => {
 	let students = [];
 	const inactive = url.searchParams.get('inactive') !== null;
 	const response = new Student();
-	const data = await response.getList(inactive ? "only" : "");
+	const data = await response.getList(inactive);
 	if (data) {
 		students = data;
 	}

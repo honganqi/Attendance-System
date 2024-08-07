@@ -7,9 +7,9 @@ spl_autoload_register(function($class) {
 $list = [];
 $student = new Student();
 
-$inactive = "";
-if (isset($_GET) && isset($_GET['inactive']) && ($_GET['inactive'] == "include" || $_GET['inactive'] == "only")) {
-    $inactive = $_GET['inactive'];
+$inactive = false;
+if (isset($_GET) && isset($_GET['inactive'])) {
+    $inactive = filter_var($_GET['inactive'], FILTER_VALIDATE_BOOLEAN);
 }
 if ($tempList = $student->getList($inactive)) {
     $list = $tempList;

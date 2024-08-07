@@ -9,7 +9,7 @@
 	const modalStore = getModalStore();
 
     export let data;
-    const student = JSON.parse(data.student);
+    const { student } = data;
     student.birthdate = formatDate(student.birthdate);
 
     function formatDate(date) {
@@ -193,7 +193,8 @@ action="?/updateStatus"
 class="mt-12 space-y-3"
 >
 <input type="hidden" name="status" value={student.status} />
-Status: {student.status ? 'ACTIVE' : 'INACTIVE'} <input type="submit" class={`btn btn-sm ${student.status ? 'variant-ghost-error' : 'variant-ghost-success'} cursor-pointer`} value={`Set status as ${student.status ? 'INACTIVE' : 'ACTIVE'}`} />
+Status <span class="chip cursor-default {student.status ? `variant-filled-success` : `variant-filled-error`}">{student.status ? 'ACTIVE' : 'INACTIVE'}</span>
+<p><input type="submit" class={`btn btn-sm variant-ghost-surface ${student.status ? 'hover:variant-ghost-error' : 'hover:variant-ghost-success'} cursor-pointer`} value={`Set status as ${student.status ? 'INACTIVE' : 'ACTIVE'}`} /></p>
 </form>
 
 
