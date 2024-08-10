@@ -8,9 +8,10 @@
 </script>
 
 <h2>{student.fullname}</h2>
+<a href={`/students/${student.id}`} class="opacity-60 hover:opacity-100">Go to student details</a>
 
 {#if logs}
-<ul>
+<ul class="mt-4">
 	{#each logs as log}
 		<li>
 			<Fa icon={log.userAction == 1 ? faSignOut : faSignIn} class={`inline ${log.userAction == 0 ? 'text-success-700 dark:text-success-500' : 'text-error-500 dark:text-error-400'}`} />

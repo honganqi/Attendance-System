@@ -9,7 +9,12 @@ class Student {
     public $suffix;
     public $nickname;
     public $birthdate;
+    public $age;
     public $gender;
+    public $emergencyContact;
+    public $emergencyNumber;
+    public $emergencyRelationship;
+    public $idnumber;
 	public $status;
     public $fullname;
     public $splitName = [
@@ -356,12 +361,15 @@ class Student {
                 ':nickname' => $data['nickname'],
                 ':birthdate' => $data['birthdate'],
                 ':gender' => $data['gender'],
+                ':emergencyContact' => $data['emergencyContact'],
+                ':emergencyNumber' => $data['emergencyNumber'],
+                ':emergencyRelationship' => $data['emergencyRelationship'],
                 ':status' => 1
             );
 
             $create = $pdo->prepare("
-                INSERT INTO students (lastname, firstname, middlename, suffix, nickname, birthdate, gender, status, id)
-                VALUES (:lastname, :firstname, :middlename, :suffix, :nickname, :birthdate, :gender, :status, UUID())
+                INSERT INTO students (lastname, firstname, middlename, suffix, nickname, birthdate, gender, emergencyContact, emergencyNumber, emergencyRelationship, status, id)
+                VALUES (:lastname, :firstname, :middlename, :suffix, :nickname, :birthdate, :gender, :emergencyContact, :emergencyNumber, :emergencyRelationship, :status, UUID())
                 RETURNING id
             ");
             if ($create->execute($newData)) {
@@ -391,6 +399,9 @@ class Student {
                 ':nickname' => $data['nickname'],
                 ':birthdate' => $data['birthdate'],
                 ':gender' => $data['gender'],
+                ':emergencyContact' => $data['emergencyContact'],
+                ':emergencyNumber' => $data['emergencyNumber'],
+                ':emergencyRelationship' => $data['emergencyRelationship'],
                 ':idnumber' => $data['idnumber'],
                 ':id' => $this->id,
             );
@@ -404,6 +415,9 @@ class Student {
                 nickname = :nickname,
                 birthdate = :birthdate,
                 gender = :gender,
+                emergencyContact = :emergencyContact,
+                emergencyNumber = :emergencyNumber,
+                emergencyRelationship = :emergencyRelationship,
                 idnumber = :idnumber
                 WHERE id = :id
             ");

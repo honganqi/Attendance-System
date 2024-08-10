@@ -49,6 +49,9 @@ CREATE TABLE `students` (
   `nickname` varchar(64) NOT NULL,
   `birthdate` date NOT NULL,
   `gender` varchar(8) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL,
+  `emergencyContact` varchar(64) NOT NULL,
+  `emergencyNumber` varchar(64) NOT NULL,
+  `emergencyRelationship` varchar(64) NOT NULL,
   `idnumber` varchar(64) NOT NULL,
   `status` tinyint(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;

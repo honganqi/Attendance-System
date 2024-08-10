@@ -1,7 +1,7 @@
 <script lang="ts">
     import { enhance } from '$app/forms';
     import { goto } from '$app/navigation';
-    import { faCakeCandles, faIdBadge, faIdCard, faUser, faVenusMars } from '@fortawesome/free-solid-svg-icons';
+    import { faCakeCandles, faIdBadge, faIdCard, faUser, faVenusMars, faPhone } from '@fortawesome/free-solid-svg-icons';
     import { getModalStore, getToastStore, type ModalSettings } from '@skeletonlabs/skeleton';
     import Fa from 'svelte-fa';
 
@@ -93,90 +93,138 @@
 method="POST"
 action="?/update"
 use:enhance={handleSubmit}
-class="mt-4 space-y-3"
+class="mt-4 space-y-8"
 >
-
-<label class="label">
-    <span><Fa icon={faUser} class="inline" /> Student Name</span>
+<div class="space-y-3">
     <div class="lg:flex gap-x-4">
-        <div class="">
-            <label class="label">
-                <input
-                    type="text"
+        <label class="label">
+            <span><Fa icon={faUser} class="inline" /> Student Name</span>
+            <div class="lg:flex gap-x-4">
+                <div class="">
+                    <label class="label">
+                        <input
+                            type="text"
+                            class="input"
+                            name="lastname"
+                            bind:value={student.lastname}
+                        />
+                        <span class="text-surface-500-400-token text-xs">Family Name</span>    
+                    </label>
+                </div>
+                <div class="">
+                    <label class="label">
+                        <input
+                            type="text"
+                            class="input"
+                            name="firstname"
+                            bind:value={student.firstname}
+                        />
+                        <span class="text-surface-500-400-token text-xs">Given Name</span>    
+                    </label>
+                </div>
+                <div class="">
+                    <label class="label">
+                        <input
+                            type="text"
+                            class="input"
+                            name="middlename"
+                            bind:value={student.middlename}
+                        />
+                        <span class="text-surface-500-400-token text-xs">Middle Name</span>    
+                    </label>
+                </div>
+                <div class="">
+                    <select
                     class="input"
-                    name="lastname"
-                    bind:value={student.lastname}
-                />
-                <span class="text-surface-500-400-token text-xs">Family Name</span>    
-            </label>
-        </div>
-        <div class="">
-            <label class="label">
-                <input
-                    type="text"
-                    class="input"
-                    name="firstname"
-                    bind:value={student.firstname}
-                />
-                <span class="text-surface-500-400-token text-xs">Given Name</span>    
-            </label>
-        </div>
-        <div class="">
-            <label class="label">
-                <input
-                    type="text"
-                    class="input"
-                    name="middlename"
-                    bind:value={student.middlename}
-                />
-                <span class="text-surface-500-400-token text-xs">Middle Name</span>    
-            </label>
-        </div>
-        <div class="">
-            <select
-            class="input"
-            name="suffix"
-            bind:value={student.suffix}
-        >
-        <option value="">no suffix</option>
-        {#each ['Jr.', 'Sr.', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII'] as suffix}
-        <option value={suffix}>{suffix}</option>
-        {/each}
-        </select>
-        </div>
+                    name="suffix"
+                    bind:value={student.suffix}
+                >
+                <option value="">no suffix</option>
+                {#each ['Jr.', 'Sr.', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII'] as suffix}
+                <option value={suffix}>{suffix}</option>
+                {/each}
+                </select>
+                </div>
+            </div>
+        </label>
     </div>
     
-</label>
-
-<div class="lg:flex gap-x-4">
-    <label class="label">
-        <span><Fa icon={faIdCard} class="inline" /> Nickname</span>
-        <input type="text" class="input" bind:value={student.nickname} name="nickname" placeholder="Nickname" required />
-    </label>    
+    <div class="lg:flex gap-x-4">
+        <label class="label">
+            <span><Fa icon={faIdCard} class="inline" /> Nickname</span>
+            <input type="text" class="input" bind:value={student.nickname} name="nickname" placeholder="Nickname" required />
+        </label>    
+    </div>
+    
+    <div class="lg:flex gap-x-4 lg:space-y-0 space-y-3">
+        <label class="label">
+            <span><Fa icon={faCakeCandles} class="inline" /> Date of Birth</span>
+            <input type="date" class="input" bind:value={student.birthdate} name="birthdate" placeholder="Date of Birth" required />
+        </label>
+        
+        <label class="label">
+            <span><Fa icon={faVenusMars} class="inline" /> Gender</span>
+            <select class="input" bind:value={student.gender} name="gender" required>
+                <option value="" disabled selected>Gender</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+            </select>
+        </label>
+    </div>    
 </div>
 
-<div class="lg:flex gap-x-4">
-    <label class="label">
-        <span><Fa icon={faCakeCandles} class="inline" /> Date of Birth</span>
-        <input type="date" class="input" bind:value={student.birthdate} name="birthdate" placeholder="Date of Birth" required />
-    </label>
-    
-    <label class="label">
-        <span><Fa icon={faVenusMars} class="inline" /> Gender</span>
-        <select class="input" bind:value={student.gender} name="gender" required>
-            <option value="" disabled selected>Gender</option>
-            <option value="male">Male</option>
-            <option value="female">Female</option>
-        </select>
-    </label>
-    
+<div>
+    <div class="space-y-3">
+        <div class="lg:flex gap-x-4">
+            <label class="label">
+                <span><Fa icon={faPhone} class="inline" /> Contact in Case of Emergency</span>
+                <div class="lg:flex gap-x-4">
+                    <div class="">
+                        <label class="label">
+                            <input
+                                type="text"
+                                class="input"
+                                name="emergencyContact"
+                                bind:value={student.emergencyContact}
+                            />
+                            <span class="text-surface-500-400-token text-xs">Name</span>    
+                        </label>
+                    </div>
+                    <div class="">
+                        <label class="label">
+                            <input
+                                type="text"
+                                class="input"
+                                name="emergencyNumber"
+                                bind:value={student.emergencyNumber}
+                            />
+                            <span class="text-surface-500-400-token text-xs">Contact Number</span>    
+                        </label>
+                    </div>
+                    <div class="">
+                        <label class="label">
+                            <input
+                                type="text"
+                                class="input"
+                                name="emergencyRelationship"
+                                bind:value={student.emergencyRelationship}
+                            />
+                            <span class="text-surface-500-400-token text-xs">Relationship to Student</span>    
+                        </label>
+                    </div>
+                </div>
+            </label>
+        </div>    
+    </div>    
 </div>
 
-<div class="lg:flex gap-x-4">
-    <label class="label">
-        <span><Fa icon={faIdBadge} class="inline" /> NFC ID Number</span>
-        <input type="text" class="input" bind:value={student.idnumber} name="idnumber" placeholder="NFC ID Number" />
-    </label>    
+<div>
+    <div class="lg:flex gap-x-4">
+        <label class="label">
+            <span><Fa icon={faIdBadge} class="inline" /> NFC ID Number</span>
+            <input type="text" class="input" bind:value={student.idnumber} name="idnumber" placeholder="NFC ID Number" />
+        </label>    
+    </div>    
 </div>
 
 
