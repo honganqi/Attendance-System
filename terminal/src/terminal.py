@@ -277,6 +277,7 @@ class UserFrame(tk.Frame):
 		# name
 		nicknameframe = Frame(infoFrameOuter, bg="white")
 		nicknameframe.pack(side="top", anchor="nw", fill="both", expand=True)
+		self.nicknameframe = nicknameframe
 		fullnameFrame = Frame(infoFrameOuter, bg="white")
 		fullnameFrame.pack(side="bottom", anchor="sw", fill="both", expand=True)
 		self.nickname = Text(nicknameframe, font=('arial', nickname_FontSize, 'bold'), bg="white", wrap="word", borderwidth=0, relief="flat", height=1, highlightthickness=0)
@@ -316,7 +317,7 @@ class UserFrame(tk.Frame):
 					self.reinitializeFrame(
 						nickname=student['nickname'],
 						fullname=student['fullname'],
-						age=""
+						age=student['age']
 					)
 
 				except ValueError as e:
@@ -350,8 +351,10 @@ class UserFrame(tk.Frame):
 			print(e)
 
 	def reinitializeFrame(self, nickname, fullname, age):
+		age = int(age)	# do anything with the "age" variable
+
 		self.nickname.insert("1.0", nickname, "center")
-		self.fullname.insert("1.0", fullname + "\n" + age, "center")
+		self.fullname.insert("1.0", fullname, "center")
 		self.nickname.tag_add("centerText", "1.0", "end")
 		self.fullname.tag_add("centerText", "1.0", "end")
 
@@ -360,7 +363,7 @@ class UserFrame(tk.Frame):
 		self.reinitializeFrame(
 			nickname="Error",
 			fullname=errorMessage,
-			age=""
+			age=0
 		)
 		if sysError == True:
 			self.controller.iconify()
