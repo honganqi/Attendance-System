@@ -50,7 +50,7 @@ services:
       context: ./admin
       dockerfile: Dockerfile
       args:
-        - BACKEND_URL=${BACKEND_URL}
+        - PUBLIC_BACKEND_URL=${PUBLIC_BACKEND_URL}
     env_file:
       - path: ./.env
         required: true
