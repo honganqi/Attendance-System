@@ -82,10 +82,10 @@ while true; do
             read -p "Logo for dashboard (dark mode): " dashboard_dark
             read -p "Logo for header nav: " header_light
             read -p "Logo for header nav (dark mode): " header_dark
-            dashboard_light=${"/img/"${dashboard_light}:-""}
-            dashboard_dark=${"/img/"${dashboard_dark}:-""}
-            header_light=${"/img/"${header_light}:-""}
-            header_dark=${"/img/"${header_dark}:-""}
+            dashboard_light=${"/img/logo/"${dashboard_light}:-""}
+            dashboard_dark=${"/img/logo/"${dashboard_dark}:-""}
+            header_light=${"/img/logo/"${header_light}:-""}
+            header_dark=${"/img/logo/"${header_dark}:-""}
             break;;
         [Nn]* | "" ) break;;
         * ) echo "Please answer yes or no.";;
