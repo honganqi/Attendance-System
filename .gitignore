@@ -11,6 +11,7 @@ admin/package
 admin/vite.config.js.timestamp-*
 admin/vite.config.ts.timestamp-*
 admin/static/img/logo/*
+admin/src/lib/config.js
 
 backend/photos/students/*
 !backend/photos/students/id_placeholder.jpg

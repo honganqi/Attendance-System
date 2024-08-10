@@ -118,6 +118,19 @@ then
     fi
 fi
 
+# if the admin config.js file does not exist, create it from the config.js.example file
+if [ ! -e "$base/admin/src/lib/config.js" ]
+then
+    # if no arguments are given, assume that the script is run as standalone
+    # otherwise, run with the supplied username
+    # -E is added to give user access to environment variables (PATH)
+    if [ ! -z "$user" ]; then
+        sudo -E -u ${user} cp -n "$base/admin/src/lib/config.js.example" "$base/admin/src/lib/config.js"
+    else
+        cp -n "$base/admin/src/lib/config.js.example" "$base/admin/src/lib/config.js"
+    fi
+fi
+
 # finally set the environment variables
 sed -i "s/TZ=.*/TZ=$timezone/" "$base/.env"
 sed -i "s/PUBLIC_BACKEND_URL=.*/PUBLIC_BACKEND_URL=$backend_url/" "$base/.env"
