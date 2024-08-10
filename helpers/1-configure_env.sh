@@ -82,10 +82,10 @@ while true; do
             read -p "Logo for dashboard (dark mode): " dashboard_dark
             read -p "Logo for header nav: " header_light
             read -p "Logo for header nav (dark mode): " header_dark
-            dashboard_light=${"/img/logo/"${dashboard_light}:-""}
-            dashboard_dark=${"/img/logo/"${dashboard_dark}:-""}
-            header_light=${"/img/logo/"${header_light}:-""}
-            header_dark=${"/img/logo/"${header_dark}:-""}
+            dashboard_light=${dashboard_light:+/img/logo/$dashboard_light}
+            dashboard_dark=${dashboard_dark:+/img/logo/$dashboard_dark}
+            header_light=${dashboard_header_lightlight:+/img/logo/$header_light}
+            header_dark=${header_dark:+/img/logo/$header_dark}
             break;;
         [Nn]* | "" ) break;;
         * ) echo "Please answer yes or no.";;
@@ -136,7 +136,7 @@ sed -i "s/TZ=.*/TZ=$timezone/" "$base/.env"
 sed -i "s/PUBLIC_BACKEND_URL=.*/PUBLIC_BACKEND_URL=$backend_url/" "$base/.env"
 sed -i "s/FRONTEND_ORIGIN=.*/FRONTEND_ORIGIN=http:\/\/$frontend_url:3000/" "$base/.env"
 sed -i "s/^Host=.*/Host=http:\/\/$frontend_url:2024\//" "$base/terminal/terminal.ini"
-sed -i "s/^const logoDashboard = .*/const logoDashboard = '$dashboard_light';/" "$base/admin/src/lib/config.js"
-sed -i "s/^const logoDashboardDark = .*/const logoDashboardDark = '$dashboard_dark';/" "$base/admin/src/lib/config.js"
-sed -i "s/^const logoHeader = .*/const logoHeader = '$header_light';/" "$base/admin/src/lib/config.js"
-sed -i "s/^const logoHeaderDark = .*/const logoHeaderDark = '$header_dark';/" "$base/admin/src/lib/config.js"
+sed -i "s/^const logoDashboard = .*/const logoDashboard = '${dashboard_light//\//\\/}';/" "$base/admin/src/lib/config.js"
+sed -i "s/^const logoDashboardDark = .*/const logoDashboardDark = '${dashboard_dark//\//\\/}';/" "$base/admin/src/lib/config.js"
+sed -i "s/^const logoHeader = .*/const logoHeader = '${header_light//\//\\/}';/" "$base/admin/src/lib/config.js"
+sed -i "s/^const logoHeaderDark = .*/const logoHeaderDark = '${header_dark//\//\\/}';/" "$base/admin/src/lib/config.js"
