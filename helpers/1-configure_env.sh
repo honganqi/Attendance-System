@@ -79,6 +79,10 @@ logoDashboard=""
 logoDashboardDark=""
 logoHeader=""
 logoHeaderDark=""
+choice_logoDashboard=""
+choice_logoDashboardDark=""
+choice_logoHeader=""
+choice_logoHeaderDark=""
 
 # if the admin config.js file does not exist, create it from the config.js.example file
 if [ ! -e $adminConfigFile ]
@@ -98,20 +102,25 @@ while IFS= read -r line; do
     # Use regex to extract values from the lines
     if [[ $line =~ const\ ([a-zA-Z_][a-zA-Z_0-9]*)\ *=\ *\'([^\']*)\' ]] then
         var_name="${BASH_REMATCH[1]}"
-        var_value=$(basename "${BASH_REMATCH[2]}")
+        var_value=${BASH_REMATCH[2]}
+        choice_value=$(basename "${BASH_REMATCH[2]}")
         
         case $var_name in
             logoDashboard)
                 logoDashboard="$var_value"
+                choice_logoDashboard="$choice_value"
                 ;;
             logoDashboardDark)
                 logoDashboardDark="$var_value"
+                choice_logoDashboardDark="$choice_value"
                 ;;
             logoHeader)
                 logoHeader="$var_value"
+                choice_logoHeader="$choice_value"
                 ;;
             logoHeaderDark)
                 logoHeaderDark="$var_value"
+                choice_logoHeaderDark="$choice_value"
                 ;;                
         esac
     fi
@@ -123,10 +132,10 @@ while true; do
     case $adminlogo in
         [Yy]* )
             printf "The logos should already be present in the /admin/static/img/ directory before running this script. Type in the same filename if your logo is identical in normal and dark mode.\n"
-            read -p "Logo for dashboard (currently $logoDashboard): " read_logoDashboard
-            read -p "Logo for dashboard (dark mode) (currently $logoDashboardDark): " read_logoDashboardDark
-            read -p "Logo for header nav (currently $logoHeader): " read_logoHeader
-            read -p "Logo for header nav (dark mode) (currently $logoHeaderDark): " read_logoHeaderDark
+            read -p "Logo for dashboard (currently $choice_logoDashboard): " read_logoDashboard
+            read -p "Logo for dashboard (dark mode) (currently $choice_logoDashboardDark): " read_logoDashboardDark
+            read -p "Logo for header nav (currently $choice_logoHeader): " read_logoHeader
+            read -p "Logo for header nav (dark mode) (currently $choice_logoHeaderDark): " read_logoHeaderDark
             [ -n "$read_logoDashboard" ] && logoDashboard="/img/logo/$read_logoDashboard"
             [ -n "$read_logoDashboardDark" ] && logoDashboardDark="/img/logo/$read_logoDashboardDark"
             [ -n "$read_logoHeader" ] && logoHeader="/img/logo/$read_logoHeader"
