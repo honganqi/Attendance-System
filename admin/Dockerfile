@@ -10,8 +10,8 @@ COPY ./package*.json .
 RUN npm ci
 COPY . .
 
-ARG BACKEND_URL
-ENV BACKEND_URL=${BACKEND_URL}
+ARG PUBLIC_BACKEND_URL
+ENV PUBLIC_BACKEND_URL=${PUBLIC_BACKEND_URL}
 
 RUN npm run build
 RUN npm prune --production
