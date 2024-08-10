@@ -72,20 +72,65 @@ while true; do
     esac
 done
 
+
+# Logo stuff for Admin
+adminConfigFile="$base/admin/src/lib/config.js"
+logoDashboard=""
+logoDashboardDark=""
+logoHeader=""
+logoHeaderDark=""
+
+# if the admin config.js file does not exist, create it from the config.js.example file
+if [ ! -e $adminConfigFile ]
+then
+    # if no arguments are given, assume that the script is run as standalone
+    # otherwise, run with the supplied username
+    # -E is added to give user access to environment variables (PATH)
+    if [ ! -z "$user" ]; then
+        sudo -E -u ${user} cp -n "$base/admin/src/lib/config.js.example" $adminConfigFile
+    else
+        cp -n "$base/admin/src/lib/config.js.example" $adminConfigFile
+    fi
+fi
+
+# Read the file line by line
+while IFS= read -r line; do
+    # Use regex to extract values from the lines
+    if [[ $line =~ const\ ([a-zA-Z_][a-zA-Z_0-9]*)\ *=\ *\'([^\']*)\' ]] then
+        var_name="${BASH_REMATCH[1]}"
+        var_value=$(basename "${BASH_REMATCH[2]}")
+        
+        case $var_name in
+            logoDashboard)
+                logoDashboard="$var_value"
+                ;;
+            logoDashboardDark)
+                logoDashboardDark="$var_value"
+                ;;
+            logoHeader)
+                logoHeader="$var_value"
+                ;;
+            logoHeaderDark)
+                logoHeaderDark="$var_value"
+                ;;                
+        esac
+    fi
+done < "$adminConfigFile"
+
 while true; do
     read -p "Do you want to add your logo to the admin frontend? (default: no) " adminlogo
     adminlogo=${adminlogo:-no}
     case $adminlogo in
         [Yy]* )
             printf "The logos should already be present in the /admin/static/img/ directory before running this script. Type in the same filename if your logo is identical in normal and dark mode.\n"
-            read -p "Logo for dashboard: " dashboard_light
-            read -p "Logo for dashboard (dark mode): " dashboard_dark
-            read -p "Logo for header nav: " header_light
-            read -p "Logo for header nav (dark mode): " header_dark
-            dashboard_light=${dashboard_light:+/img/logo/$dashboard_light}
-            dashboard_dark=${dashboard_dark:+/img/logo/$dashboard_dark}
-            header_light=${dashboard_header_lightlight:+/img/logo/$header_light}
-            header_dark=${header_dark:+/img/logo/$header_dark}
+            read -p "Logo for dashboard (currently $logoDashboard): " read_logoDashboard
+            read -p "Logo for dashboard (dark mode) (currently $logoDashboardDark): " read_logoDashboardDark
+            read -p "Logo for header nav (currently $logoHeader): " read_logoHeader
+            read -p "Logo for header nav (dark mode) (currently $logoHeaderDark): " read_logoHeaderDark
+            [ -n "$read_logoDashboard" ] && logoDashboard="/img/logo/$read_logoDashboard"
+            [ -n "$read_logoDashboardDark" ] && logoDashboardDark="/img/logo/$read_logoDashboardDark"
+            [ -n "$read_logoHeader" ] && logoHeader="/img/logo/$read_logoHeader"
+            [ -n "$read_logoHeaderDark" ] && logoHeaderDark="/img/logo/$read_logoHeaderDark"
             break;;
         [Nn]* | "" ) break;;
         * ) echo "Please answer yes or no.";;
@@ -118,25 +163,12 @@ then
     fi
 fi
 
-# if the admin config.js file does not exist, create it from the config.js.example file
-if [ ! -e "$base/admin/src/lib/config.js" ]
-then
-    # if no arguments are given, assume that the script is run as standalone
-    # otherwise, run with the supplied username
-    # -E is added to give user access to environment variables (PATH)
-    if [ ! -z "$user" ]; then
-        sudo -E -u ${user} cp -n "$base/admin/src/lib/config.js.example" "$base/admin/src/lib/config.js"
-    else
-        cp -n "$base/admin/src/lib/config.js.example" "$base/admin/src/lib/config.js"
-    fi
-fi
-
 # finally set the environment variables
 sed -i "s/TZ=.*/TZ=$timezone/" "$base/.env"
 sed -i "s/PUBLIC_BACKEND_URL=.*/PUBLIC_BACKEND_URL=$backend_url/" "$base/.env"
 sed -i "s/FRONTEND_ORIGIN=.*/FRONTEND_ORIGIN=http:\/\/$frontend_url:3000/" "$base/.env"
 sed -i "s/^Host=.*/Host=http:\/\/$frontend_url:2024\//" "$base/terminal/terminal.ini"
-sed -i "s/^const logoDashboard = .*/const logoDashboard = '${dashboard_light//\//\\/}';/" "$base/admin/src/lib/config.js"
-sed -i "s/^const logoDashboardDark = .*/const logoDashboardDark = '${dashboard_dark//\//\\/}';/" "$base/admin/src/lib/config.js"
-sed -i "s/^const logoHeader = .*/const logoHeader = '${header_light//\//\\/}';/" "$base/admin/src/lib/config.js"
-sed -i "s/^const logoHeaderDark = .*/const logoHeaderDark = '${header_dark//\//\\/}';/" "$base/admin/src/lib/config.js"
+sed -i "s/^const logoDashboard = .*/const logoDashboard = '${logoDashboard//\//\\/}';/" $adminConfigFile
+sed -i "s/^const logoDashboardDark = .*/const logoDashboardDark = '${logoDashboardDark//\//\\/}';/" $adminConfigFile
+sed -i "s/^const logoHeader = .*/const logoHeader = '${logoHeader//\//\\/}';/" $adminConfigFile
+sed -i "s/^const logoHeaderDark = .*/const logoHeaderDark = '${logoHeaderDark//\//\\/}';/" $adminConfigFile
