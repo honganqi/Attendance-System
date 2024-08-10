@@ -5,7 +5,7 @@
 
 	// Floating UI for Popups
 	import { computePosition, autoUpdate, flip, shift, offset, arrow } from '@floating-ui/dom';
-	import { storePopup } from '@skeletonlabs/skeleton';
+	import { storePopup, modeCurrent as lightMode } from '@skeletonlabs/skeleton';
 	import { currentPage } from '$lib/stores';
 
 	import Fa from 'svelte-fa';
@@ -73,6 +73,10 @@
 			document.body.setAttribute('data-theme', theme);
 		}
 	};
+
+	import { logoHeader, logoHeaderDark } from '$lib/config';
+	let logoPath: string;
+	$: logoPath = $lightMode ? logoHeader : logoHeaderDark;
 </script>
 
 <Modal regionBody="overflow-auto"/>
@@ -85,7 +89,11 @@
 		<AppBar>
 			<svelte:fragment slot="lead">
 				<a href="/" id="siteTitleHeader" class="text-3xl font-bold">
-					<img src="/img/logo_header.png" alt="Attendance" style="max-height: 35px;"/>
+					{#if logoPath }
+					<img src={logoPath} alt="Attendance" style="max-height: 35px;"/>
+					{:else}
+					Attendance
+					{/if}
 				</a>
 			</svelte:fragment>
 			<svelte:fragment slot="trail">

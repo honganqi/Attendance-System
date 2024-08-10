@@ -56,6 +56,11 @@ The current main branch of this project is meant to be used in a trusted network
         7. Delete the ZIP file: `rm <filename of the downloaded ZIP file>`
         8. You can also install FTP and go from there. See [OPTIONAL: Install VSFTPd](./README.md#optional-install-vsftpd)
 2. Enter the Attendance System directory in your home directory: `cd ~/Attendance-System`
+3. (optional) Add logo images in the admin frontend directory: `/admin/static/img/`. The installer will ask you for the filenames of the following:
+    - logo for dashboard
+    - logo for dashboard (dark mode)
+    - logo for header nav
+    - logo for header nav (dark mode)
 3. Make the installer executable: `chmod +x ./installer.sh`
 4. Run the installer as root with `sudo -E ./install.sh`.
     - The `-E` option is needed to pass environment variables to the Docker installer script.

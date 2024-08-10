@@ -33,10 +33,10 @@ export TZ
 read -p "Specify your timezone (currently: $TZ): " timezone
 timezone=$(escape_string ${timezone:-$TZ})
 
-export BACKEND_URL
-cleaned_backend_url=$(clean_url ${BACKEND_URL})
+export PUBLIC_BACKEND_URL
+cleaned_backend_url=$(clean_url ${PUBLIC_BACKEND_URL})
 read -p "Backend service URL (leave as default if using the default Docker containers) (currently: $cleaned_backend_url): " backend_url
-backend_url=$(clean_url ${backend_url:-$BACKEND_URL})
+backend_url=$(clean_url ${backend_url:-$PUBLIC_BACKEND_URL})
 echo $backend_url
 
 export FRONTEND_ORIGIN
@@ -72,6 +72,26 @@ while true; do
     esac
 done
 
+while true; do
+    read -p "Do you want to add your logo to the admin frontend? (default: no) " adminlogo
+    adminlogo=${adminlogo:-no}
+    case $adminlogo in
+        [Yy]* )
+            printf "The logos should already be present in the /admin/static/img/ directory before running this script. Type in the same filename if your logo is identical in normal and dark mode.\n"
+            read -p "Logo for dashboard: " dashboard_light
+            read -p "Logo for dashboard (dark mode): " dashboard_dark
+            read -p "Logo for header nav: " header_light
+            read -p "Logo for header nav (dark mode): " header_dark
+            dashboard_light=${"/img/"${dashboard_light}:-""}
+            dashboard_dark=${"/img/"${dashboard_dark}:-""}
+            header_light=${"/img/"${header_light}:-""}
+            header_dark=${"/img/"${header_dark}:-""}
+            break;;
+        [Nn]* | "" ) break;;
+        * ) echo "Please answer yes or no.";;
+    esac
+done
+
 # if the .env file does not exist, create it from the .env.example file
 if [ ! -e "$base/.env" ]
 then
@@ -100,6 +120,10 @@ fi
 
 # finally set the environment variables
 sed -i "s/TZ=.*/TZ=$timezone/" "$base/.env"
-sed -i "s/BACKEND_URL=.*/BACKEND_URL=$backend_url/" "$base/.env"
+sed -i "s/PUBLIC_BACKEND_URL=.*/PUBLIC_BACKEND_URL=$backend_url/" "$base/.env"
 sed -i "s/FRONTEND_ORIGIN=.*/FRONTEND_ORIGIN=http:\/\/$frontend_url:3000/" "$base/.env"
 sed -i "s/^Host=.*/Host=http:\/\/$frontend_url:2024\//" "$base/terminal/terminal.ini"
+sed -i "s/^const logoDashboard = .*/const logoDashboard = '$dashboard_light';/" "$base/admin/src/lib/config.js"
+sed -i "s/^const logoDashboardDark = .*/const logoDashboardDark = '$dashboard_dark';/" "$base/admin/src/lib/config.js"
+sed -i "s/^const logoHeader = .*/const logoHeader = '$header_light';/" "$base/admin/src/lib/config.js"
+sed -i "s/^const logoHeaderDark = .*/const logoHeaderDark = '$header_dark';/" "$base/admin/src/lib/config.js"
