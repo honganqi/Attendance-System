@@ -2,7 +2,7 @@ import { PUBLIC_BACKEND_URL } from '$env/static/public';
 
 const goToEndpoint = async (endpoint: string, args = {}) => {
 	let params = '';
-	if (args) {
+	if (Object.keys(args).length) {
 		params = '?' + new URLSearchParams(args).toString();
 	}
     const response = await fetch(`http://${PUBLIC_BACKEND_URL}/api${endpoint}${params}`, {
@@ -23,7 +23,7 @@ const goToEndpoint = async (endpoint: string, args = {}) => {
 const postToEndpoint = async (endpoint: string, data: Object = {}, args = {}) => {
 	try {
 		let params = '';
-		if (args) {
+		if (Object.keys(args).length) {
 			params = '?' + new URLSearchParams(args).toString();
 		}
 		const response = await fetch(`http://${PUBLIC_BACKEND_URL}/api${endpoint}${params}`, {
