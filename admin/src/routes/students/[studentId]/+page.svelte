@@ -2,7 +2,7 @@
     import { enhance } from '$app/forms';
     import { goto } from '$app/navigation';
     import { faCakeCandles, faIdBadge, faIdCard, faUser, faVenusMars, faPhone } from '@fortawesome/free-solid-svg-icons';
-    import { getModalStore, getToastStore, type ModalSettings } from '@skeletonlabs/skeleton';
+    import { getModalStore, getToastStore, ProgressRadial, type ModalSettings } from '@skeletonlabs/skeleton';
     import Fa from 'svelte-fa';
 
     const toastStore = getToastStore();
@@ -10,7 +10,7 @@
 
     export let data;
     const { student } = data;
-    student.birthdate = formatDate(student.birthdate);
+    student.birthdate = student.id != 'new' ? formatDate(student.birthdate) : '';
 
     function formatDate(date) {
         date = new Date(date);
@@ -27,7 +27,7 @@
 	};
 
     let formIsWorking = false;
-    let deleteForm;
+    let deleteForm: any;
 
 	function deleteModal(): void {
         const modal: ModalSettings = {
@@ -52,8 +52,8 @@
         deleteModal();
     }
 
-    async function handleSubmit({ formElement, formData, action, cancel, submitter }) {
-		formIsWorking = true;
+    async function handleSubmit({ action }) {
+        // handleSubmit.params = { formElement, formData, action, cancel, submitter }
 		// `form` is the `<form>` element
     	// `data` is its `FormData` object
     	// `action` is the URL to which the form is posted
@@ -61,7 +61,8 @@
 		// `submitter` is the `HTMLElement` that caused the form to be submitted
 
 		// any data validation can be done here if needed on client side and if it fails, cancel() should be called
-		// formData.set('eventId', eventId);
+
+        formIsWorking = true;
 
 		return async ({ result, update }) => {
 	      	// `result` is an `ActionResult` object
@@ -71,7 +72,7 @@
 			}
             
             if (result.data && result.data.data) {
-                if (result.data.data.fullname) {
+                if ('fullname' in result.data.data) {
                     student.fullname = result.data.data.fullname;
                 }
                 if ('status' in result.data.data) {
@@ -94,14 +95,22 @@
 			background: e.messageType,
 		});
 	}
+
+    let formAction = student.id == 'new' ? '?/addnew' : '?/update';
 </script>
 
-<h1>Student Details</h1>
-<h2 class="mt-2">{student.fullname}</h2>
+{#if formIsWorking}
+<div id="loadingOverlay">
+	<ProgressRadial />
+</div>
+{/if}
+
+<h1>{#if student.id == 'new'}New {/if}Student Details</h1>
+{#if student.id != 'new'}<h2 class="mt-2">{student.fullname}</h2>{/if}
 
 <form
 method="POST"
-action="?/update"
+action={formAction}
 use:enhance={handleSubmit}
 class="mt-4 space-y-8"
 >
@@ -110,51 +119,46 @@ class="mt-4 space-y-8"
         <label class="label">
             <span><Fa icon={faUser} class="inline" /> Student Name</span>
             <div class="lg:flex gap-x-4">
-                <div class="">
-                    <label class="label">
-                        <input
-                            type="text"
-                            class="input"
-                            name="lastname"
-                            bind:value={student.lastname}
-                        />
-                        <span class="text-surface-500-400-token text-xs">Family Name</span>    
-                    </label>
-                </div>
-                <div class="">
-                    <label class="label">
-                        <input
-                            type="text"
-                            class="input"
-                            name="firstname"
-                            bind:value={student.firstname}
-                        />
-                        <span class="text-surface-500-400-token text-xs">Given Name</span>    
-                    </label>
-                </div>
-                <div class="">
-                    <label class="label">
-                        <input
-                            type="text"
-                            class="input"
-                            name="middlename"
-                            bind:value={student.middlename}
-                        />
-                        <span class="text-surface-500-400-token text-xs">Middle Name</span>    
-                    </label>
-                </div>
-                <div class="">
+                <label class="label">
+                    <input
+                        type="text"
+                        class="input"
+                        name="lastname"
+                        bind:value={student.lastname}
+                    />
+                    <span class="text-surface-500-400-token text-xs">Family Name</span>    
+                </label>
+                <label class="label">
+                    <input
+                        type="text"
+                        class="input"
+                        name="firstname"
+                        bind:value={student.firstname}
+                    />
+                    <span class="text-surface-500-400-token text-xs">Given Name</span>    
+                </label>
+                <label class="label">
+                    <input
+                        type="text"
+                        class="input"
+                        name="middlename"
+                        bind:value={student.middlename}
+                    />
+                    <span class="text-surface-500-400-token text-xs">Middle Name</span>    
+                </label>
+                <label class="label">
                     <select
                     class="input"
                     name="suffix"
                     bind:value={student.suffix}
-                >
-                <option value="">no suffix</option>
-                {#each ['Jr.', 'Sr.', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII'] as suffix}
-                <option value={suffix}>{suffix}</option>
-                {/each}
-                </select>
-                </div>
+                    >
+                    <option value="">no suffix</option>
+                    {#each ['Jr.', 'Sr.', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII'] as suffix}
+                    <option value={suffix}>{suffix}</option>
+                    {/each}
+                    </select>
+                    <span class="text-surface-500-400-token text-xs">Suffix</span>  
+                </label>
             </div>
         </label>
     </div>
@@ -243,8 +247,7 @@ class="mt-4 space-y-8"
 </form>
 
 
-
-
+{#if student.id != 'new'}
 <form
 method="POST"
 action="?/updateStatus"
@@ -266,3 +269,4 @@ use:enhance={handleSubmit}
 >
 <button type="button" class="btn btn-sm variant-ringed-error hover:variant-filled-error cursor-pointer" on:click={deleteRecord}>Delete record</button>
 </form>
+{/if}

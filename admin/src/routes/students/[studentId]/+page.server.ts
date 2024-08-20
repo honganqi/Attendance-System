@@ -4,10 +4,18 @@ import { Student } from '$lib/classes/Student';
 import { Response } from '$lib/classes/Response';
 
 export const actions: Actions = {
+	addnew: async ({ request }) => {
+		const newData = Object.fromEntries(await request.formData());
+		const student = new Student();
+		const response = await student.createRecord(newData);
+		
+		return Response.sendResponse(response);
+	},
+
 	update: async ({ request, params }) => {
 		const newData = Object.fromEntries(await request.formData());
-		const update = new Student(params.studentId);
-		const response = await update.updateRecord(newData);
+		const student = new Student(params.studentId);
+		const response = await student.updateRecord(newData);
 
 		return Response.sendResponse(response);
 	},
@@ -16,8 +24,8 @@ export const actions: Actions = {
 		try {
 			const formData = Object.fromEntries(await request.formData());
 			const newStatus = formData.status != 'true' ? true : false;
-			const update = new Student(params.studentId);
-			const response = await update.updateStatus(newStatus);
+			const student = new Student(params.studentId);
+			const response = await student.updateStatus(newStatus);
 
 			return Response.sendResponse(response);
 		}
