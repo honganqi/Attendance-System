@@ -11,9 +11,9 @@ $response = array(
 );
 
 $data = json_decode(trim(file_get_contents("php://input")));
-if (property_exists($contents, 'newData')) {
+if (property_exists($data, 'newData')) {
     $student = new Student();
-    $response = $student->store($contents->newData);
+    $response = $student->store($data->newData);
 }
 
 header($response['status_code_header']);

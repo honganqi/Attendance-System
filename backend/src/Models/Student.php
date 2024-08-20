@@ -393,11 +393,15 @@ class Student {
                 // get UUID of last inserted record
                 $this->id = $create->fetchColumn();
                 $response['status_code_header'] = 'HTTP/1.1 200 OK';
+                $response['message'] = "Student record created successfully!";
+                $response['messageType'] = "success";
                 $response['body'] = "success";
                 return $response;
             }
         } catch (Exception $e) {
-            $response['status_code_header'] = 'HTTP/1.1 200 OK';
+            $response['status_code_header'] = 'HTTP/1.1 400 Bad Request';
+            $response['message'] = "There was a problem creating the student record";
+            $response['messageType'] = "error";
             $response['error'] = "error";
             $response['body'] = $e->getMessage();
             return $response;
@@ -458,7 +462,7 @@ class Student {
             $response['status_code_header'] = 'HTTP/1.1 400 Bad Request';
             $response['message'] = "There was an error updating the student record";
             $response['messageType'] = "error";
-            $response['body'] = "error";
+            $response['body'] = $e->getMessage();
             return $response;
         }
     }
@@ -483,7 +487,7 @@ class Student {
             $response['status_code_header'] = 'HTTP/1.1 400 Bad Request';
             $response['message'] = "There was an error deleting the student record";
             $response['messageType'] = "error";
-            $response['body'] = "error";
+            $response['body'] = $e->getMessage();
             return $response;
         }
     }
@@ -516,7 +520,7 @@ class Student {
             $response['status_code_header'] = 'HTTP/1.1 400 Bad Request';
             $response['message'] = "There was an error updating the student status";
             $response['messageType'] = "error";
-            $response['body'] = "error";
+            $response['body'] = $e->getMessage();
             return $response;
         }
     }

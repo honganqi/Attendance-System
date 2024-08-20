@@ -9,6 +9,10 @@ $student = new Student();
 
 $filters = new stdClass();
 
+// force "inactive=false" to get active records by default
+if (!isset($_GET) || !isset($_GET['inactive'])) {
+    $_GET['inactive'] = false;
+}
 if (isset($_GET) && isset($_GET['inactive'])) {
     $filters->status = filter_var($_GET['inactive'], FILTER_VALIDATE_BOOLEAN);
 }
