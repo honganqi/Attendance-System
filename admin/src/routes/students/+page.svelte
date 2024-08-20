@@ -71,8 +71,9 @@
 			method="POST"
 			action="?/addnew"
 			use:enhance={handleSubmit}
-			class="space-y-3"
+			class="space-y-6"
 		>
+		<div class="space-y-3">
 			<input type="text" class="input" name="lastname" placeholder="Family Name" required />
 			<input type="text" class="input" name="firstname" placeholder="Given Name" required />
 			<input type="text" class="input" name="middlename" placeholder="Middle Name" />
@@ -84,14 +85,25 @@
 				{/each}
 			</select>
 			<input type="text" class="input" name="nickname" placeholder="Nickname" required />
+		</div>
+		<div class="space-y-3">
 			<input type="date" class="input" name="birthdate" placeholder="Date of Birth" required />
 			<select class="input" name="gender" required>
 				<option value="" disabled selected>Gender</option>
 				<option value="male">Male</option>
 				<option value="female">Female</option>
 			</select>
+		</div>
+        <div class="space-y-3">
+                <span>Contact in Case of Emergency</span>
+				<input type="text" class="input" name="emergencyContact" placeholder="Emergency Contact" />
+				<input type="text" class="input" name="emergencyNumber" placeholder="Contact Number" />
+				<input type="text" class="input" name="emergencyRelationship" placeholder="Relationship to Student" />
+        </div>
+		<div class="space-y-3">
 			<input type="hidden" name="studentId" value="new" />
 			<input type="submit" class="btn h-12 bg-primary-300-600-token" value="Save" />
+		</div>
 		</form>
 	
 	</div>
