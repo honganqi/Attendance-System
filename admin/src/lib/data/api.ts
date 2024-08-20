@@ -1,58 +1,34 @@
 import { PUBLIC_BACKEND_URL } from '$env/static/public';
+import type { RequestEvent } from '@sveltejs/kit';
 
-const goToEndpoint = async (endpoint: string, args = {}) => {
-	let params = '';
-	if (Object.keys(args).length) {
-		params = '?' + new URLSearchParams(args).toString();
-	}
-    const response = await fetch(`http://${PUBLIC_BACKEND_URL}/api${endpoint}${params}`, {
-        method: "GET",
+interface ApiParams {
+	method: string;
+	event?: RequestEvent;
+	data?: any;
+	headers?: any;
+}
+
+const goToEndpoint = async (endpoint: string, params?: ApiParams) => {
+    const response = await fetch(`${PUBLIC_BACKEND_URL}/api` + endpoint, {
+        method: params?.method || 'get',
         mode: "cors",
-        cache: "no-cache",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        redirect: "follow",
-        referrerPolicy: "no-referrer",
+        //cache: "no-cache",
+        headers: params?.headers,
+		body: params?.data && JSON.stringify(params.data),
+		//referrer: 'localhost:5173',
+        //redirect: "follow",
+        //referrerPolicy: "no-referrer",
     });
 
-    const json = await response.json();
-    return json;
-}
-
-const postToEndpoint = async (endpoint: string, data: Object = {}, args = {}) => {
 	try {
-		let params = '';
-		if (Object.keys(args).length) {
-			params = '?' + new URLSearchParams(args).toString();
-		}
-		const response = await fetch(`http://${PUBLIC_BACKEND_URL}/api${endpoint}${params}`, {
-			method: "POST",
-			mode: "cors",
-			cache: "no-cache",
-			headers: {
-				"Content-Type": "application/json",
-			},
-			redirect: "follow",
-			referrerPolicy: "no-referrer",
-			body: JSON.stringify(data)
-		});
-	
 		if (response.ok) {
 			const json = await response.json();
-			const { status, message, messageType, data } = json;
-			return {
-				status,
-				message,
-				messageType: `variant-filled-${messageType}`,
-				data
-			}    
+			return json;
 		}
 	}
-	catch (error) {
-		console.log(error);
+	catch (err) {
+		console.log(err);
 	}
-
 }
 
-export { goToEndpoint, postToEndpoint }
+export { goToEndpoint }

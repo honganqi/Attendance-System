@@ -69,8 +69,18 @@
 			if (result.type !== 'failure') {
 				await update({ reset: false });
 			}
-			formIsWorking = false;
+            
+            if (result.data && result.data.data) {
+                if (result.data.data.fullname) {
+                    student.fullname = result.data.data.fullname;
+                }
+                if ('status' in result.data.data) {
+                    student.status = result.data.data.status;
+                }
+            }
+
 			showFormResponse(result.data);
+			formIsWorking = false;
 
             if (action.search == '?/delete') {
                 goto('/students');
@@ -239,6 +249,7 @@ class="mt-4 space-y-8"
 method="POST"
 action="?/updateStatus"
 class="mt-12 space-y-3"
+use:enhance={handleSubmit}
 >
 <input type="hidden" name="status" value={student.status} />
 Status <span class="chip cursor-default {student.status ? `variant-filled-success` : `variant-filled-error`}">{student.status ? 'ACTIVE' : 'INACTIVE'}</span>

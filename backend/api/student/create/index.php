@@ -1,21 +1,20 @@
 <?php
 spl_autoload_register(function($class) {
-    $path = __DIR__ . '/../../../src/classes/' . str_replace('\\', '/', $class . '.php');
+    $path = __DIR__ . '/../../../src/Models/' . str_replace('\\', '/', $class . '.php');
 	if (file_exists($path)) require $path;
 });
 
+$response = array(
+    'status_code_header' => "HTTP/1.1 400 Bad Request",
+    'message' => "There was an error creating the student record",
+    'messageType' => "error"
+);
 
-$returnjson = array();
-$contents = json_decode(trim(file_get_contents("php://input")), true);
-$newData = $contents['newData'];
-
-if (isset($newData)) {
+$data = json_decode(trim(file_get_contents("php://input")));
+if (property_exists($contents, 'newData')) {
     $student = new Student();
-    $response = $student->createRecord($newData);
+    $response = $student->store($contents->newData);
 }
 
-if ($response['body']) {
-    $response['message'] = "New student record created successfully!";
-    $response['messageType'] = "success";
-    echo json_encode($response);
-}
+header($response['status_code_header']);
+echo json_encode($response);

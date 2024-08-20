@@ -1,30 +1,25 @@
 import { fail, type Actions } from '@sveltejs/kit';
 import type { PageServerLoad } from "./$types";
 import { Student } from '$lib/classes/Student';
+import { Response } from '$lib/classes/Response';
 
 export const actions: Actions = {
 	update: async ({ request, params }) => {
 		const newData = Object.fromEntries(await request.formData());
 		const update = new Student(params.studentId);
 		const response = await update.updateRecord(newData);
-		return {
-			status: response?.status,
-			message: response?.message,
-			messageType: response?.messageType
-		}
+
+		return Response.sendResponse(response);
 	},
 
 	updateStatus: async ({ request, params }) => {
 		try {
 			const formData = Object.fromEntries(await request.formData());
-			const newStatus = formData.status != '1' ? '1' : '0';
+			const newStatus = formData.status != 'true' ? true : false;
 			const update = new Student(params.studentId);
 			const response = await update.updateStatus(newStatus);
-			return {
-				status: response?.status,
-				message: response?.message,
-				messageType: response?.messageType
-			}
+
+			return Response.sendResponse(response);
 		}
 		catch (err) {
 
@@ -35,11 +30,8 @@ export const actions: Actions = {
 		try {
 			const student = new Student(params.studentId);
 			const response = await student.deleteRecord();
-			return {
-				status: response?.status,
-				message: response?.message,
-				messageType: response?.messageType
-			}
+			
+			return Response.sendResponse(response);
 		}
 		catch (err) {
 

@@ -1,12 +1,12 @@
 <?php
 spl_autoload_register(function($class) {
-    $path = __DIR__ . '/../../../src/classes/' . str_replace('\\', '/', $class . '.php');
+    $path = __DIR__ . '/../../../src/Models/' . str_replace('\\', '/', $class . '.php');
 	if (file_exists($path)) require $path;
 });
 
 if (isset($_GET['id'])) {
     $student = new Student($_GET['id']);
-    $student->getRecord();
+    $student->show();
 
     $returnjson = json_encode($student);
     if (isset($_GET['nameOnly'])) {
@@ -24,7 +24,7 @@ if (isset($_GET['idnumber'])) {
     $student = new Student();
     $data = $student->getStudentIDFromIDNumber($_GET['idnumber']);
     if (isset($data['id'])) {
-        $student->getRecord();
+        $student->show($data['id']);
         $data['student'] = $student;
     }
     echo json_encode($data);

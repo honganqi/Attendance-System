@@ -9,7 +9,9 @@ export class Attendance {
     
     async getLogs() {
         try {
-            const data = await goToEndpoint('/attendance/logs/', {date: this.urlDate});
+            const data = await goToEndpoint(`/attendance/logs/?date=${this.urlDate}`, {
+                method: 'get'
+            });
             if (data) {
                 return {
                     logs: data
@@ -23,7 +25,9 @@ export class Attendance {
 
     async getStudentLogs(studentId: string) {
         try {
-            const logs = await goToEndpoint('/attendance/logs/student/', {date: this.urlDate, student: studentId})
+            const logs = await goToEndpoint(`/attendance/logs/student/?date=${this.urlDate}&student=${studentId}`, {
+                method: 'get'
+            })
             if (logs) {
                 return logs
             }

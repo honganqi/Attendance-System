@@ -1,18 +1,18 @@
 <?php
 spl_autoload_register(function($class) {
-    $path = __DIR__ . '/../../../src/classes/' . str_replace('\\', '/', $class . '.php');
+    $path = __DIR__ . '/../../../src/Models/' . str_replace('\\', '/', $class . '.php');
 	if (file_exists($path)) require $path;
 });
 
+$returnjson = array();
+
 if (isset($_GET['date'])) {
-	$return = [];
 	$logs = new Attendance($_GET['date']);
 	
     $data = $logs->getList();
 	if ($data) {
-		$return = $data;
+		$returnjson = $data;
 	}
-	echo json_encode($return);
 }
 
-if (isset($entry)) echo json_encode($entry->transaction);
+echo json_encode($returnjson);

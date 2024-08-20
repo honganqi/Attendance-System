@@ -34,23 +34,31 @@ class Student {
         }
     }
 
-    public function getList($inactive = false) {
+    public function index($filters = null) {
         $pdo = $this->_pdo;
-        $string = "SELECT id FROM students WHERE status = ?";
-        if ($inactive) {
-            $args = array(0);
-        } else {
-            $args = array(1);        
+        $args = [];
+        $string = "SELECT id FROM students WHERE 1";
+        if (!is_null($filters)) {
+            foreach ($filters as $fieldname => $value) {
+                switch ($fieldname) {
+                    case "status":
+                        $string .= " AND $fieldname = :$fieldname";
+                        $args[':' . $fieldname] = $value ? 0 : 1;
+                        break;
+                    default:
+                        break;
+                }
+            }
         }
+
         $query = $pdo->prepare($string);
         $query->execute($args);
 
         $students = [];
-
         if ($query->rowCount() > 0) {
             while ($row = $query->fetch()) {
                 $student = new Student($row['id']);
-                $student->getRecord();
+                $student->show();
 
                 $students[] = array(
                     'id' => $student->id,
@@ -63,10 +71,12 @@ class Student {
         return $students;
     }
 
-    public function getRecord($forAttendance = false) {
+    public function show($studentId = null, $forAttendance = false) {
         try {
             $string = "";
-            $args = array(':id' => $this->id);
+            $args = [];
+            $args[':id'] = !is_null($studentId) ? $studentId : $this->id;
+
             if ($forAttendance) {
                 $string = "AND status = :status";
                 $args[':status'] = 1;
@@ -81,7 +91,14 @@ class Student {
 
                 // assign fields as object properties
                 foreach ($student as $fieldname => $value) {
-                    $this->$fieldname = $value;
+                    switch ($fieldname) {
+                        case "status":
+                            $this->$fieldname = (bool)$value;
+                            break;
+                        default:
+                            $this->$fieldname = $value;
+                            break;
+                    }
                 }
 
                 // create name properties: fullname and splitName
@@ -98,7 +115,7 @@ class Student {
         }
     }
 
-    function testRecord() {
+    function test() {
         $records = array(
             'a1a1a1a1' => array(
                 'lastname' => 'Cardenas',
@@ -348,22 +365,22 @@ class Student {
 		}
 	}
 
-    public function createRecord($data) {
+    public function store($data) {
         // FUNCTION NEEDS VALIDATION (duplicates, etc.)
         try {
             $pdo = $this->_pdo;
 
             $newData = array(
-                ':lastname' => $data['lastname'],
-                ':firstname' => $data['firstname'],
-                ':middlename' => $data['middlename'],
-                ':suffix' => $data['suffix'],
-                ':nickname' => $data['nickname'],
-                ':birthdate' => $data['birthdate'],
-                ':gender' => $data['gender'],
-                ':emergencyContact' => $data['emergencyContact'],
-                ':emergencyNumber' => $data['emergencyNumber'],
-                ':emergencyRelationship' => $data['emergencyRelationship'],
+                ':lastname' => $data->lastname,
+                ':firstname' => $data->firstname,
+                ':middlename' => $data->middlename,
+                ':suffix' => $data->suffix,
+                ':nickname' => $data->nickname,
+                ':birthdate' => $data->birthdate,
+                ':gender' => $data->gender,
+                ':emergencyContact' => $data->emergencyContact,
+                ':emergencyNumber' => $data->emergencyNumber,
+                ':emergencyRelationship' => $data->emergencyRelationship,
                 ':status' => 1
             );
 
@@ -387,22 +404,22 @@ class Student {
         }
     }
 
-    public function updateRecord($data) {
+    public function update($data) {
         try {
             $pdo = $this->_pdo;
 
             $newData = array(
-                ':lastname' => $data['lastname'],
-                ':firstname' => $data['firstname'],
-                ':middlename' => $data['middlename'],
-                ':suffix' => $data['suffix'],
-                ':nickname' => $data['nickname'],
-                ':birthdate' => $data['birthdate'],
-                ':gender' => $data['gender'],
-                ':emergencyContact' => $data['emergencyContact'],
-                ':emergencyNumber' => $data['emergencyNumber'],
-                ':emergencyRelationship' => $data['emergencyRelationship'],
-                ':idnumber' => $data['idnumber'],
+                ':lastname' => $data->lastname,
+                ':firstname' => $data->firstname,
+                ':middlename' => $data->middlename,
+                ':suffix' => $data->suffix,
+                ':nickname' => $data->nickname,
+                ':birthdate' => $data->birthdate,
+                ':gender' => $data->gender,
+                ':emergencyContact' => $data->emergencyContact,
+                ':emergencyNumber' => $data->emergencyNumber,
+                ':emergencyRelationship' => $data->emergencyRelationship,
+                ':idnumber' => $data->idnumber,
                 ':id' => $this->id,
             );
 
@@ -422,18 +439,31 @@ class Student {
                 WHERE id = :id
             ");
             if ($update->execute($newData)) {
+                $this->makeName([
+                    'lastname' => $data->lastname,
+                    'firstname' => $data->firstname,
+                    'middlename' => $data->middlename,
+                    'suffix' => $data->suffix
+                ]);
                 $response['status_code_header'] = 'HTTP/1.1 200 OK';
+                $response['message'] = "Student record updated successfully!";
+                $response['messageType'] = "success";
                 $response['body'] = "success";
+                $response['data'] = array(
+                    'fullname' => $this->fullname
+                );
                 return $response;
             }
         } catch (Exception $e) {
-            $response['status_code_header'] = 'HTTP/1.1 200 OK';
+            $response['status_code_header'] = 'HTTP/1.1 400 Bad Request';
+            $response['message'] = "There was an error updating the student record";
+            $response['messageType'] = "error";
             $response['body'] = "error";
             return $response;
         }
     }
 
-    public function deleteRecord() {
+    public function delete() {
         try {
             $pdo = $this->_pdo;
 
@@ -444,11 +474,15 @@ class Student {
             $delete = $pdo->prepare("DELETE FROM students WHERE id = :id");
             if ($delete->execute($data)) {
                 $response['status_code_header'] = 'HTTP/1.1 200 OK';
+                $response['message'] = "Student record deleted successfully!";
+                $response['messageType'] = "success";
                 $response['body'] = "success";
                 return $response;
             }
         } catch (Exception $e) {
-            $response['status_code_header'] = 'HTTP/1.1 200 OK';
+            $response['status_code_header'] = 'HTTP/1.1 400 Bad Request';
+            $response['message'] = "There was an error deleting the student record";
+            $response['messageType'] = "error";
             $response['body'] = "error";
             return $response;
         }
@@ -470,11 +504,18 @@ class Student {
             ");
             if ($update->execute($data)) {
                 $response['status_code_header'] = 'HTTP/1.1 200 OK';
+                $response['message'] = "Successfully updated the student status!";
+                $response['messageType'] = "success";
                 $response['body'] = "success";
+                $response['data'] = array(
+                    'status' => (bool)$newStatus
+                );
                 return $response;
             }
         } catch (Exception $e) {
-            $response['status_code_header'] = 'HTTP/1.1 200 OK';
+            $response['status_code_header'] = 'HTTP/1.1 400 Bad Request';
+            $response['message'] = "There was an error updating the student status";
+            $response['messageType'] = "error";
             $response['body'] = "error";
             return $response;
         }

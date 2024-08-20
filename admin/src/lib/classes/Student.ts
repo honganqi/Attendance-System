@@ -1,4 +1,4 @@
-import { goToEndpoint, postToEndpoint } from "$lib/data/api";
+import { goToEndpoint } from "$lib/data/api";
 
 export class Student {
     id!: string;
@@ -33,7 +33,9 @@ export class Student {
 
 	async getList(inactive: boolean = false) {
 		try {
-			const data = await goToEndpoint('/student/getList/', {inactive});
+			const data = await goToEndpoint(`/student/getList/${inactive ? '?inactive=true' : ''}`, {
+				method: 'get'
+			});
 			if (data) {
 				return data;
 			}
@@ -45,7 +47,9 @@ export class Student {
 
     async getRecord() {
 		try {
-			const data = await goToEndpoint('/student/get/', {id: this.id})
+			const data = await goToEndpoint(`/student/get/?id=${this.id}`, {
+				method: 'get',
+			});
 			if (data) {
 				if (data.birthdate) {
 					this.birthdate = new Date(data.birthdate)
@@ -101,7 +105,9 @@ export class Student {
 
 	async getStudentIDFromIDNumber(idnumber: string) {
 		try {
-			const data = await goToEndpoint('/student/get/', {idnumber});
+			const data = await goToEndpoint(`/student/get/?idnumber=${idnumber}`, {
+				method: 'get'
+			});
 			if (data) {
 				return data.student.id;
 			}
@@ -124,9 +130,14 @@ export class Student {
 		}
 	}
 
-	async createRecord(newData) {
+	async createRecord(newData: any) {
 		try {
-			const response = await postToEndpoint('/student/create/', {newData});
+			const response = await goToEndpoint('/student/create/', {
+				method: 'post',
+				data: {
+					newData
+				}
+			});
 			if (response) {
 				const { status, message, messageType, data } = response;
 				return {
@@ -134,7 +145,7 @@ export class Student {
 					message,
 					messageType,
 					data
-				}	
+				}
 			}
 		}
 		catch (err) {
@@ -142,9 +153,15 @@ export class Student {
 		}
 	}
 
-	async updateRecord(newData) {
+	async updateRecord(newData: any) {
 		try {
-			const response = await postToEndpoint('/student/update/', {id: this.id, newData}, {id: this.id});
+			const response = await goToEndpoint(`/student/update/?id=${this.id}`, {
+				method: 'post',
+				data: {
+					id: this.id,
+					newData
+				}
+			});
 			if (response) {
 				const { status, message, messageType, data } = response;
 				return {
@@ -156,13 +173,20 @@ export class Student {
 			}
 		}
 		catch (err) {
-
+			console.log('student update');
+			console.log(err);
 		}
 	}
 
 	async deleteRecord() {
 		try {
-			const response = await postToEndpoint('/student/update/', {id: this.id, delete: true}, {id: this.id});
+			const response = await goToEndpoint(`/student/delete/?id=${this.id}`, {
+				method: 'post',
+				data: {
+					id: this.id,
+					delete: true
+				}
+			});
 			if (response) {
 				const { status, message, messageType, data } = response;
 				return {
@@ -178,9 +202,15 @@ export class Student {
 		}
 	}
 
-	async updateStatus(newStatus) {
+	async updateStatus(newStatus: boolean) {
 		try {
-			const response = await postToEndpoint('/student/updateStatus/', {id: this.id, newStatus}, {id: this.id});
+			const response = await goToEndpoint(`/student/updateStatus/?id=${this.id}`, {
+				method: 'post',
+				data: {
+					id: this.id,
+					newStatus
+				}
+			});
 			if (response) {
 				const { status, message, messageType, data } = response;
 				return {

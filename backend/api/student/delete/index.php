@@ -6,19 +6,19 @@ spl_autoload_register(function($class) {
 
 $response = array(
     'status_code_header' => "HTTP/1.1 400 Bad Request",
-    'message' => "There was an error updating the student status",
+    'message' => "There was an error deleting the student record",
     'messageType' => "error"
 );
 
 $data = json_decode(trim(file_get_contents("php://input")));
 if (
     property_exists($data, 'id')
-    AND property_exists($data, 'newStatus')
+    AND property_exists($data, 'delete')
     AND isset($_GET['id'])
     AND $data->id == $_GET['id']
     ) {
     $student = new Student($data->id);
-    $response = $student->updateStatus($data->newStatus);
+    $response = $student->delete();
 }
 
 header($response['status_code_header']);

@@ -1,28 +1,25 @@
 <?php
 spl_autoload_register(function($class) {
-    $path = __DIR__ . '/../../../src/classes/' . str_replace('\\', '/', $class . '.php');
+    $path = __DIR__ . '/../../../src/Models/' . str_replace('\\', '/', $class . '.php');
 	if (file_exists($path)) require $path;
 });
 
+$response = array(
+    'status_code_header' => "HTTP/1.1 400 Bad Request",
+    'message' => "There was an error updating the student record",
+    'messageType' => "error"
+);
 
-if (isset($_GET['id'])) {
-    $returnjson = array();
-    $student = new Student($_GET['id']);
-    $contents = json_decode(trim(file_get_contents("php://input")), true);
-    if (array_key_exists('newData', $contents)) {
-        $response = $student->updateRecord($contents['newData']);
-    } elseif (array_key_exists('delete', $contents)) {
-        $response = $student->deleteRecord();
-    }
-
-    $verb = array_key_exists('delete', $contents) ? "deleted" : "updated";
-
-    header($response['status_code_header']);
-    if ($response['body']) {
-        $response['message'] = "Student record $verb successfully!";
-        $response['messageType'] = "success";
-        echo json_encode($response);
-    }
-} else {
-    echo json_encode(array('none' => 'none'));
+$data = json_decode(trim(file_get_contents("php://input")));
+if (
+    property_exists($data, 'id')
+    AND property_exists($data, 'newData')
+    AND isset($_GET['id'])
+    AND $data->id == $_GET['id']
+    ) {
+    $student = new Student($data->id);
+    $response = $student->update($data->newData);
 }
+
+header($response['status_code_header']);
+echo json_encode($response);
